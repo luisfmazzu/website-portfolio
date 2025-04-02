@@ -1,0 +1,7 @@
+# robots.txt file for luisfmazzu.com
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://luisfmazzu.com/sitemap.xml
+
