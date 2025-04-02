@@ -5,10 +5,11 @@ import { useTheme } from "next-themes"
 
 import { Button } from "@/app/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/dropdown-menu"
+import { useTranslation } from "@/hooks/use-translation"
 
 export function ModeToggle() {
   const { setTheme } = useTheme()
-
+  const { t } = useTranslation()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -20,10 +21,10 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="glass-card">
       <DropdownMenuItem onClick={() => setTheme("dark")} className="hover:bg-cool-900/40 hover:text-cool-300">
-          Dark
+          {t("nav.dark")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("light")} className="hover:bg-cool-100 hover:text-cool-700">
-          Light
+          {t("nav.light")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

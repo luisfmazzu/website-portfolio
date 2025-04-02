@@ -23,18 +23,19 @@ export default function ProjectModal({ open, onOpenChange, project }: ProjectMod
         <DialogHeader>
           <DialogTitle className="text-2xl gradient-text">{project.title}</DialogTitle>
           <DialogDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {project.technologies.map((tech) => (
-                <Badge
-                  key={tech}
-                  variant="secondary"
-                  className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
-                >
-                  {tech}
-                </Badge>
-              ))}
-            </div>
+            {project.description}
           </DialogDescription>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {project.technologies.map((tech, index) => (
+              <Badge
+                key={`${tech}-${index}`}
+                variant="secondary"
+                className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
+              >
+                {tech}
+              </Badge>
+            ))}
+          </div>
         </DialogHeader>
 
         <div className="mt-4">
@@ -60,7 +61,7 @@ export default function ProjectModal({ open, onOpenChange, project }: ProjectMod
                   </h4>
                   {project.role && (
                     <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1">
-                      {t("projects.roleLabel")} <span className="font-medium">{project.role}</span>
+                      {t("projects.roleLabel")}:  <span className="font-medium">{project.role}</span>
                     </p>
                   )}
                 </div>
@@ -92,8 +93,6 @@ export default function ProjectModal({ open, onOpenChange, project }: ProjectMod
               )}
             </div>
           )}
-
-          <p className="mb-4 text-muted-foreground">{project.description}</p>
 
           <h4 className="font-medium text-cool-700 dark:text-cool-300 mb-2">{t("projects.detailsLabel")}</h4>
           <ul className="space-y-2 mb-6">

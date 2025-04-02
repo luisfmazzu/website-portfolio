@@ -27,7 +27,7 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
   try {
     // Create a skeleton covering 2016..2025
     const skeleton = createSkeletonData();
-    console.log(skeleton);
+
     const gitStatsData: GitStatsData = {
       totalCommits: 0,
       yearlyCommits: {},

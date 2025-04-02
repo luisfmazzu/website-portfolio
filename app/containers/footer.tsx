@@ -2,10 +2,12 @@
 
 import Link from "next/link"
 import { Github, Linkedin, Mail, Twitter } from "lucide-react"
-
 import { motion } from "framer-motion"
+import { useTranslation } from "@/hooks/use-translation"
 
 export default function Footer() {
+  const { t } = useTranslation()
+  
   const socialLinks = [
     { icon: <Github className="h-5 w-5" />, href: "https://github.com/luisfmazzu", label: "GitHub" },
     { icon: <Linkedin className="h-5 w-5" />, href: "https://www.linkedin.com/in/luis-felipe-mazzuchetti-ortiz/", label: "LinkedIn" },
@@ -43,7 +45,7 @@ export default function Footer() {
               </motion.span>
             </Link>
             <p className="text-center text-sm text-muted-foreground md:text-left">
-              Building digital experience with expertise.
+              {t("footer.tagline")}
             </p>
           </motion.div>
 
@@ -60,7 +62,7 @@ export default function Footer() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-                  whilehover={{ y: -3, scale: 1.1 }}
+                  whileHover={{ y: -3, scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <Link
@@ -81,7 +83,7 @@ export default function Footer() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.7 }}
             >
-              © {new Date().getFullYear()} Luis Ortiz. All rights reserved.
+              © {new Date().getFullYear()} Luis Ortiz. {t("footer.copyright")}
             </motion.p>
           </motion.div>
         </div>

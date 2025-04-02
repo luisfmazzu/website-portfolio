@@ -28,8 +28,10 @@ import {
 import SectionDivider from "../../components/section-divider"
 import { motion, AnimatePresence } from "framer-motion"
 import { useInView } from "framer-motion"
+import { useTranslation } from "@/hooks/use-translation"
 
 export default function Skills() {
+  const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState("all")
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 })
@@ -44,19 +46,19 @@ export default function Skills() {
   const skillCategories = [
     {
       id: "all",
-      name: "All Skills",
+      name: t("skills.categories.all"),
     },
     {
       id: "frontend",
-      name: "Frontend",
+      name: t("skills.categories.frontend"),
     },
     {
       id: "backend",
-      name: "Backend",
+      name: t("skills.categories.backend"),
     },
     {
       id: "other",
-      name: "Other",
+      name: t("skills.categories.other"),
     },
   ]
 
@@ -137,7 +139,7 @@ export default function Skills() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6 }}
             >
-              My Skills
+              {t("skills.title")}
             </motion.h2>
             <motion.p
               className="mt-4 text-muted-foreground"
@@ -145,7 +147,7 @@ export default function Skills() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              These are the technologies and tools I work with to bring ideas to life.
+              {t("skills.description")}
             </motion.p>
           </div>
         </SectionObserver>
@@ -170,7 +172,7 @@ export default function Skills() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-                    whilehover={{ y: -2 }}
+                    whileHover={{ y: -2 }}
                     whileTap={{ y: 0 }}
                   >
                     <TabsTrigger
@@ -201,7 +203,7 @@ export default function Skills() {
                           <motion.div
                             key={`${selectedCategory}-${skill.name}`}
                             variants={itemVariants}
-                            whilehover={{
+                            whileHover={{
                               scale: 1.05,
                               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                             }}

@@ -206,7 +206,7 @@ export default function Projects() {
                     {project.role && (
                       <div className="mb-3">
                         <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                          {t("projects.roleLabel").replace(":", "")} {project.role}
+                          {t("projects.roleLabel")} {project.role}
                         </span>
                       </div>
                     )}
@@ -218,7 +218,7 @@ export default function Projects() {
                     >
                       {project.technologies.map((tech, techIndex) => (
                         <motion.div
-                          key={tech}
+                          key={`${project.id}-${tech}-${techIndex}`}
                           variants={tagVariants}
                           custom={techIndex}
                           transition={{ delay: 0.1 * techIndex }}

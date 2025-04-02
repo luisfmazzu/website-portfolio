@@ -19,6 +19,7 @@ import { Resend } from 'resend';
 import { Alert, AlertDescription } from "@/app/components/alert"
 import { AlertCircle } from "lucide-react"
 import dynamic from "next/dynamic"
+import { useTranslation } from "@/hooks/use-translation"
 
 // Dynamically import ReCAPTCHA with no SSR to avoid hydration issues
 const ReCAPTCHA : any = dynamic(() => import("react-google-recaptcha"), { ssr: false })
@@ -28,10 +29,13 @@ const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
-  recaptcha: z.string().min(1, { message: "Please complete the reCAPTCHA verification." }),
+  recaptcha: z.string().optional().refine(val => !!val, {
+    message: "Please complete the reCAPTCHA verification."
+  }),
 })
 
 export default function Contact() {
+  const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 })
@@ -50,21 +54,11 @@ export default function Contact() {
       email: "",
       subject: "",
       message: "",
+      recaptcha: "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!recaptchaVerified) {
-      toast({
-        title: "reCAPTCHA verification required",
-        description: "Please complete the reCAPTCHA verification before sending your message.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    console.log(recaptchaVerified)
-
     setIsSubmitting(true)
 
     // Create mailto link with form values
@@ -117,8 +111,10 @@ export default function Contact() {
   const handleRecaptchaChange = (token: string | null) => {
     if (token) {
       setRecaptchaVerified(true)
+      form.setValue("recaptcha", token);
     } else {
       setRecaptchaVerified(false)
+      form.setValue("recaptcha", "");
     }
   }
 
@@ -196,9 +192,9 @@ export default function Contact() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl gradient-text">Get In Touch</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl gradient-text">{t("contact.title")}</h2>
           <p className="mt-4 text-muted-foreground">
-            Have a project in mind or want to collaborate? Feel free to reach out!
+            {t("contact.description")}
           </p>
         </motion.div>
 
@@ -225,8 +221,8 @@ export default function Contact() {
                   <Phone className="h-6 w-6 text-indigo-500" />
                 </motion.div>
                 <div>
-                  <CardTitle className="text-cool-700 dark:text-cool-300">Phone</CardTitle>
-                  <CardDescription>Call me directly</CardDescription>
+                  <CardTitle className="text-cool-700 dark:text-cool-300">{t("contact.phone.title")}</CardTitle>
+                  <CardDescription>{t("contact.phone.description")}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col items-center">
@@ -270,8 +266,8 @@ export default function Contact() {
                   <Mail className="h-6 w-6 text-indigo-500" />
                 </motion.div>
                 <div>
-                  <CardTitle className="text-cool-700 dark:text-cool-300">Email</CardTitle>
-                  <CardDescription>Send me an email</CardDescription>
+                  <CardTitle className="text-cool-700 dark:text-cool-300">{t("contact.email.title")}</CardTitle>
+                  <CardDescription>{t("contact.email.description")}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col items-center">
@@ -315,8 +311,8 @@ export default function Contact() {
                   <MapPin className="h-6 w-6 text-indigo-500" />
                 </motion.div>
                 <div>
-                  <CardTitle className="text-cool-700 dark:text-cool-300">Location</CardTitle>
-                  <CardDescription>My current location</CardDescription>
+                  <CardTitle className="text-cool-700 dark:text-cool-300">{t("contact.location.title")}</CardTitle>
+                  <CardDescription>{t("contact.location.description")}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
@@ -335,8 +331,8 @@ export default function Contact() {
           >
             <Card className="mx-auto max-w-2xl glass-card cool-shadow-lg border-cool-200 dark:border-cool-800">
               <CardHeader>
-                <CardTitle className="text-cool-700 dark:text-cool-300">Send Me a Message</CardTitle>
-                <CardDescription>Fill out the form below and I'll get back to you as soon as possible.</CardDescription>
+                <CardTitle className="text-cool-700 dark:text-cool-300">{t("contact.form.title")}</CardTitle>
+                <CardDescription>{t("contact.form.description")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
@@ -353,10 +349,10 @@ export default function Contact() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-cool-700 dark:text-cool-300">Name</FormLabel>
+                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.name")}</FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Your name"
+                                  placeholder={t("contact.form.name")}
                                   {...field}
                                   className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
                                 />
@@ -372,10 +368,10 @@ export default function Contact() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-cool-700 dark:text-cool-300">Email</FormLabel>
+                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.email")}</FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Your email"
+                                  placeholder={t("contact.form.email")}
                                   {...field}
                                   className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
                                 />
@@ -392,10 +388,10 @@ export default function Contact() {
                         name="subject"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-cool-700 dark:text-cool-300">Subject</FormLabel>
+                            <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.subject")}</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Message subject"
+                                placeholder={t("contact.form.subject")}
                                 {...field}
                                 className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
                               />
@@ -411,10 +407,10 @@ export default function Contact() {
                         name="message"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-cool-700 dark:text-cool-300">Message</FormLabel>
+                            <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.message")}</FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Your message"
+                                placeholder={t("contact.form.message")}
                                 rows={5}
                                 {...field}
                                 className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
@@ -427,15 +423,29 @@ export default function Contact() {
                     </motion.div>
                     {/* reCAPTCHA */}
                     <motion.div variants={itemVariants} className="flex justify-center">
-                      <div className="recaptcha-container">
-                        <ReCAPTCHA
-                          ref={recaptchaRef}
-                          sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY}
-                          onChange={handleRecaptchaChange}
-                          onError={handleRecaptchaError}
-                          theme="light"
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="recaptcha"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <div className="recaptcha-container">
+                                <ReCAPTCHA
+                                  ref={recaptchaRef}
+                                  sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY}
+                                  onChange={(token: string | null) => {
+                                    handleRecaptchaChange(token);
+                                    field.onChange(token || "");
+                                  }}
+                                  onError={handleRecaptchaError}
+                                  theme="light"
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
                       {recaptchaError && (
                         <Alert variant="destructive" className="mt-2">
@@ -483,11 +493,11 @@ export default function Contact() {
                                   />
                                 </svg>
                               </motion.div>
-                              Sending Email...
+                              {t("contact.form.sending")}
                             </>
                           ) : (
                             <>
-                              <Send className="mr-2 h-4 w-4" /> Send Email
+                              <Send className="mr-2 h-4 w-4" /> {t("contact.form.submit")}
                             </>
                           )}
                         </Button>
