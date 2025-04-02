@@ -20,6 +20,12 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
   const [language, setLanguage] = useState<Language>("en")
   const [translations, setTranslations] = useState<Record<string, Record<string, string>>>({})
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Set isClient to true once component is mounted
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     // Load translations
@@ -29,6 +35,9 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         en: {
           "previous": "previous",
           "next": "next",
+          // Common terms
+          "common.retry": "Retry",
+          
           // Header
           "nav.home": "Home",
           "nav.about": "About",
@@ -168,6 +177,33 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "skills.categories.backend": "Backend",
           "skills.categories.other": "Other",
 
+          // Git Stats
+          "gitStats.title": "Git Stats",
+          "gitStats.description": "My open-source contributions and Git activity.",
+          "gitStats.totalCommits": "Total Commits",
+          "gitStats.pullRequests": "Pull Requests",
+          "gitStats.contributionGraph": "Contribution Graph",
+          "gitStats.yearlyCommits": "Yearly Commits",
+          "gitStats.topLanguages": "Top Languages",
+          "gitStats.contributionsIn": "contributions in",
+          "gitStats.less": "Less",
+          "gitStats.more": "More",
+          "gitStats.prev": "Prev",
+          "gitStats.next": "Next",
+          "gitStats.loading": "Loading Git stats...",
+          "gitStats.months.jan": "Jan",
+          "gitStats.months.feb": "Feb",
+          "gitStats.months.mar": "Mar",
+          "gitStats.months.apr": "Apr",
+          "gitStats.months.may": "May",
+          "gitStats.months.jun": "Jun",
+          "gitStats.months.jul": "Jul",
+          "gitStats.months.aug": "Aug",
+          "gitStats.months.sep": "Sep",
+          "gitStats.months.oct": "Oct",
+          "gitStats.months.nov": "Nov",
+          "gitStats.months.dec": "Dec",
+
           // Projects
           "projects.title": "My Projects",
           "projects.description": "Browse through my recent work and personal projects.",
@@ -234,127 +270,127 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           
           // Project 6 - 16
           "projects.project6.title": "Scrape Sense AI",
-          "projects.project6.description": "Uma plataforma de web scraping com IA que permite aos usuários extrair e estruturar dados de qualquer site usando consultas personalizáveis.",
-          "projects.project6.detail1": "Desenvolvi uma API Python/Flask com processamento assíncrono de tarefas para gerenciar trabalhos de web scraping em larga escala com eficiência, integrando limitação de taxa e rotação de proxy para evitar bloqueios de IP.",
-          "projects.project6.detail2": "Utilizei modelos de PNL da OpenAI para analisar e estruturar dados web não estruturados, melhorando a precisão em 30% em comparação com métodos tradicionais de scraping.",
-          "projects.project6.detail3": "Criei uma interface de usuário intuitiva e responsiva com TypeScript e Next.js, permitindo que os usuários configurem regras de scraping, visualizem resultados e exportem dados em múltiplos formatos (CSV, JSON).",
-          "projects.project6.detail4": "Implantei a aplicação na AWS usando EC2, S3, Lambda e RDS (PostgreSQL), garantindo alta disponibilidade e escalabilidade.",
-          "projects.project6.detail5": "Implementei autenticação segura baseada em JWT e um painel onde os usuários podem acompanhar trabalhos de scraping ativos, baixar resultados e gerenciar assinaturas.",
-          "projects.project6.detail6": "Integrei um sistema de proxy rotativo e automação de navegador headless (Playwright/Selenium) para contornar medidas anti-scraping, garantindo a recuperação bem-sucedida de dados de sites complexos.",
-          "projects.project6.role": "Engenheiro Full Stack",
+          "projects.project6.description": "An AI-powered web scraping platform that enables users to extract and structure data from any website using customizable queries.",
+          "projects.project6.detail1": "Developed a Python/Flask API with asynchronous task processing to efficiently manage large-scale web scraping jobs, integrating rate limiting and proxy rotation to avoid IP blocks.",
+          "projects.project6.detail2": "Utilized OpenAI NLP models to analyze and structure unstructured web data, improving accuracy by 30% compared to traditional scraping methods.",
+          "projects.project6.detail3": "Created an intuitive and responsive user interface with TypeScript and Next.js, allowing users to configure scraping rules, view results, and export data in multiple formats (CSV, JSON).",
+          "projects.project6.detail4": "Deployed the application on AWS using EC2, S3, Lambda, and RDS (PostgreSQL), ensuring high availability and scalability.",
+          "projects.project6.detail5": "Implemented secure JWT-based authentication and a dashboard where users can track active scraping jobs, download results, and manage subscriptions.",
+          "projects.project6.detail6": "Integrated a rotating proxy system and headless browser automation (Playwright/Selenium) to bypass anti-scraping measures, ensuring successful data retrieval from complex websites.",
+          "projects.project6.role": "Full Stack Engineer",
           
           "projects.project7.title": "TriviaGen AI",
-          "projects.project7.description": "Um aplicativo com IA que extrai dados, gera perguntas de trivialidades precisas com respostas corretas e cria distratores plausíveis.",
-          "projects.project7.detail1": "Utilizei Selenium para extrair dados estruturados de múltiplas fontes enquanto lidava com conteúdo dinâmico e evitava detecção de bots.",
-          "projects.project7.detail2": "Implementei técnicas de PNL com TensorFlow para analisar dados extraídos e gerar perguntas de trivialidades relevantes e baseadas em fatos.",
-          "projects.project7.detail3": "Desenvolvi um algoritmo para produzir respostas incorretas, mas contextualmente relacionadas, melhorando a dificuldade e o engajamento do quiz.",
-          "projects.project7.detail4": "Construí uma API escalável com Python e Django para gerenciar perguntas, envios de usuários e validação de respostas com PostgreSQL para armazenamento de dados.",
-          "projects.project7.detail5": "Integrei regras de validação para garantir que as perguntas geradas fossem coerentes, precisas e livres de duplicações.",
-          "projects.project7.detail6": "Projetei uma interface simples para os usuários personalizarem categorias de perguntas, dificuldade e exportarem quizzes em múltiplos formatos.",
+          "projects.project7.description": "An AI application that extracts data, generates accurate trivia questions with correct answers, and creates plausible distractors.",
+          "projects.project7.detail1": "Used Selenium to extract structured data from multiple sources while handling dynamic content and avoiding bot detection.",
+          "projects.project7.detail2": "Implemented NLP techniques with TensorFlow to analyze extracted data and generate relevant, fact-based trivia questions.",
+          "projects.project7.detail3": "Developed an algorithm to produce incorrect but contextually related answers, improving quiz difficulty and engagement.",
+          "projects.project7.detail4": "Built a scalable API with Python and Django to manage questions, user submissions, and answer validation with PostgreSQL for data storage.",
+          "projects.project7.detail5": "Integrated validation rules to ensure generated questions were coherent, accurate, and free of duplications.",
+          "projects.project7.detail6": "Designed a simple interface for users to customize question categories, difficulty, and export quizzes in multiple formats.",
           "projects.project7.company": "Ocarina Studios Inc.",
-          "projects.project7.role": "Engenheiro Full Stack",
+          "projects.project7.role": "Full Stack Engineer",
           
-          "projects.project8.title": "Programa Acelerador do Google",
-          "projects.project8.description": "Um dos 60 estúdios em todo o mundo selecionados para o acelerador do Google, obtendo mentoria especializada em análise de jogos e estratégia de negócios.",
-          "projects.project8.detail1": "Participei de workshops liderados pelo Google sobre estratégias de monetização, retenção e operações ao vivo.",
-          "projects.project8.detail2": "Otimizei KPIs principais (DAU, retenção) usando feedback de mentores e insights de coorte.",
-          "projects.project8.detail3": "Redesenhei a abordagem de operações ao vivo, impulsionando métricas de engajamento de jogadores.",
-          "projects.project8.detail4": "Construí conexões na indústria através de eventos de networking selecionados.",
-          "projects.project8.detail5": "Implementei testes A/B que aumentaram o tempo de sessão em 35%.",
-          "projects.project8.detail6": "Apliquei aprendizados para garantir financiamento adicional para o estúdio.",
+          "projects.project8.title": "Google Accelerator Program",
+          "projects.project8.description": "One of 60 studios worldwide selected for Google's accelerator, gaining specialized mentoring in game analytics and business strategy.",
+          "projects.project8.detail1": "Participated in Google-led workshops on monetization strategies, retention, and live operations.",
+          "projects.project8.detail2": "Optimized key KPIs (DAU, retention) using mentor feedback and cohort insights.",
+          "projects.project8.detail3": "Redesigned live operations approach, boosting player engagement metrics.",
+          "projects.project8.detail4": "Built industry connections through curated networking events.",
+          "projects.project8.detail5": "Implemented A/B testing that increased session time by 35%.",
+          "projects.project8.detail6": "Applied learnings to secure additional funding for the studio.",
           "projects.project8.company": "Ocarina Studios Inc.",
-          "projects.project8.role": "Gerente de Engenharia de Software",
+          "projects.project8.role": "Software Engineering Manager",
           
           // Project 9
           "projects.project9.title": "Dream Quiz",
-          "projects.project9.description": "Uma API de jogo gerenciando sessões de usuários, análises e processamento de dados em tempo real.",
-          "projects.project9.detail1": "Construí backend escalável com C#/.NET.",
-          "projects.project9.detail2": "Projetei esquemas MongoDB para desempenho otimizado de consultas analíticas.",
-          "projects.project9.detail3": "Implementei AWS Lambda para processamento de eventos com custo eficiente.",
-          "projects.project9.detail4": "Desenvolvi gerenciamento de sessão com cache Redis.",
-          "projects.project9.detail5": "Criei dashboards em tempo real usando pipelines de análise.",
-          "projects.project9.detail6": "Protegi API com JWT e limitação de taxa.",
+          "projects.project9.description": "A game API managing user sessions, analytics, and real-time data processing.",
+          "projects.project9.detail1": "Built scalable backend with C#/.NET.",
+          "projects.project9.detail2": "Designed MongoDB schemas for optimized analytical query performance.",
+          "projects.project9.detail3": "Implemented AWS Lambda for cost-efficient event processing.",
+          "projects.project9.detail4": "Developed session management with Redis caching.",
+          "projects.project9.detail5": "Created real-time dashboards using analytics pipelines.",
+          "projects.project9.detail6": "Secured API with JWT and rate limiting.",
           "projects.project9.company": "Ocarina Studios Inc.",
-          "projects.project9.role": "Engenheiro Full Stack",
+          "projects.project9.role": "Full Stack Engineer",
           
           // Project 10
           "projects.project10.title": "Save Your Brain: Trivia",
-          "projects.project10.description": "Uma API de jogo de trivia multiplayer de alto desempenho com matchmaking, rankings e jogabilidade em tempo real.",
-          "projects.project10.detail1": "Desenvolvi multiplayer em tempo real usando WebSockets com o modelo de concorrência do Golang.",
-          "projects.project10.detail2": "Construí matchmaking baseado em habilidades com classificação ELO e otimização de fila.",
-          "projects.project10.detail3": "Projetei leaderboards com Redis com classificações diárias/semanais/de todos os tempos.",
-          "projects.project10.detail4": "Criei sistemas anti-trapaça para validação de respostas e verificação de tempo.",
-          "projects.project10.detail5": "Implementei AWS DynamoDB para persistência de estado de jogo com baixa latência.",
-          "projects.project10.detail6": "Desenvolvi arquitetura de microsserviços com Gin para alta escalabilidade.",
+          "projects.project10.description": "A high-performance multiplayer trivia game API with matchmaking, rankings, and real-time gameplay.",
+          "projects.project10.detail1": "Developed real-time multiplayer using WebSockets with Golang's concurrency model.",
+          "projects.project10.detail2": "Built skill-based matchmaking with ELO ranking and queue optimization.",
+          "projects.project10.detail3": "Designed Redis-backed leaderboards with daily/weekly/all-time rankings.",
+          "projects.project10.detail4": "Created anti-cheating systems for answer validation and time verification.",
+          "projects.project10.detail5": "Implemented AWS DynamoDB for low-latency game state persistence.",
+          "projects.project10.detail6": "Developed microservice architecture with Gin for high scalability.",
           "projects.project10.company": "Ocarina Studios Inc.",
-          "projects.project10.role": "Engenheiro Full Stack",
+          "projects.project10.role": "Full Stack Engineer",
           
           // Project 11
           "projects.project11.title": "Maver",
-          "projects.project11.description": "Um aplicativo iOS que grava entrada de voz, converte em MIDI editável e transforma em sons de instrumentos, com suporte de uma API personalizada de processamento de áudio.",
-          "projects.project11.detail1": "Construí um aplicativo iOS baseado em SwiftUI com integração Core Audio para gravação de voz de alta fidelidade.",
-          "projects.project11.detail2": "Desenvolvi um algoritmo proprietário de detecção de notas para converter gravações de voz em notas MIDI.",
-          "projects.project11.detail3": "Criei um editor de faixas intuitivo com ajuste de notas, quantização e controle de tempo.",
-          "projects.project11.detail4": "Projetei uma API baseada em nuvem (Python/Flask) para aprimorar o processamento de áudio com correção de erros.",
-          "projects.project11.detail5": "Implementei autenticação de usuário e sincronização na nuvem para salvar e recuperar projetos em vários dispositivos.",
-          "projects.project11.detail6": "Otimizei a conversão MIDI para reduzir artefatos e melhorar a precisão musical.",
+          "projects.project11.description": "An iOS app that records voice input, converts to editable MIDI, and transforms into instrument sounds, supported by a custom audio processing API.",
+          "projects.project11.detail1": "Built a SwiftUI-based iOS app with Core Audio integration for high-fidelity voice recording.",
+          "projects.project11.detail2": "Developed a proprietary note detection algorithm to convert voice recordings to MIDI notes.",
+          "projects.project11.detail3": "Created an intuitive track editor with note adjustment, quantization, and tempo control.",
+          "projects.project11.detail4": "Designed a cloud-based API (Python/Flask) to enhance audio processing with error correction.",
+          "projects.project11.detail5": "Implemented user authentication and cloud synchronization to save and retrieve projects across multiple devices.",
+          "projects.project11.detail6": "Optimized MIDI conversion to reduce artifacts and improve musical accuracy.",
           "projects.project11.company": "Ocarina Studios Inc.",
-          "projects.project11.role": "Engenheiro Full Stack",
+          "projects.project11.role": "Full Stack Engineer",
           
           // Project 12
-          "projects.project12.title": "Auditoria de Software Segura com Intel SGX",
-          "projects.project12.description": "Uma modificação do kernel Linux aproveitando o Intel SGX para auditar e criar hash de programas executados em ambientes não confiáveis, garantindo registro à prova de adulteração.",
-          "projects.project12.detail1": "Modifiquei o kernel Linux para interceptar execuções de programas e extrair assinaturas de código em tempo real.",
-          "projects.project12.detail2": "Implementei enclaves Intel SGX para armazenar e verificar hashes de programas com segurança, protegendo-os de adulteração em nível de SO.",
-          "projects.project12.detail3": "Desenvolvi um daemon de auditoria leve baseado em C para monitorar eventos de criação e encerramento de processos.",
-          "projects.project12.detail4": "Projetei um mecanismo de cadeia de hash dentro do SGX para detectar modificações não autorizadas em assinaturas de programas registradas.",
-          "projects.project12.detail5": "Integrei atestação criptográfica para verificar a integridade do enclave antes de aceitar logs de auditoria.",
-          "projects.project12.company": "Universidade Tecnológica Federal do Paraná",
-          "projects.project12.role": "Estudante de Engenharia da Computação",
+          "projects.project12.title": "Secure Software Auditing with Intel SGX",
+          "projects.project12.description": "A Linux kernel modification leveraging Intel SGX to audit and hash programs executed in untrusted environments, ensuring tamper-proof logging.",
+          "projects.project12.detail1": "Modified the Linux kernel to intercept program executions and extract code signatures in real-time.",
+          "projects.project12.detail2": "Implemented Intel SGX enclaves to securely store and verify program hashes, protecting them from OS-level tampering.",
+          "projects.project12.detail3": "Developed a lightweight C-based auditing daemon to monitor process creation and termination events.",
+          "projects.project12.detail4": "Designed a hash chain mechanism within SGX to detect unauthorized modifications to registered program signatures.",
+          "projects.project12.detail5": "Integrated cryptographic attestation to verify enclave integrity before accepting audit logs.",
+          "projects.project12.company": "Federal University of Technology - Paraná",
+          "projects.project12.role": "Computer Engineering Student",
           
           // Project 13
-          "projects.project13.title": "Análise Profunda de Redes Blockchain Usando TEEs",
-          "projects.project13.description": "Pesquisei e prototipei uma rede blockchain aproveitando Intel SGX e Arm TrustZone para analisar compensações entre segurança e desempenho em ambientes de execução confiáveis.",
-          "projects.project13.detail1": "Desenvolvi componentes principais de TEE em C usando o SDK Intel SGX para operações seguras de enclave (atestação, vedação).",
-          "projects.project13.detail2": "Construí lógica blockchain não-TEE em Rust, com interface com SGX via FFI para operações críticas de desempenho.",
-          "projects.project13.detail3": "Implementei componentes Arm TrustZone (OP-TEE) em C para análise comparativa de arquiteturas TEE.",
-          "projects.project13.detail4": "Criei módulos de kernel Linux (C) para monitorar e auditar a execução hospedada em TEE em tempo de execução.",
-          "projects.project13.detail5": "Projetei ferramentas de benchmarking em Python para medir a sobrecarga do SGX/TrustZone nos mecanismos de consenso.",
-          "projects.project13.detail6": "Explorei arquiteturas híbridas usando Graphene-SGX para executar nós blockchain não modificados em enclaves.",
-          "projects.project13.company": "Universidade Tecnológica Federal do Paraná",
-          "projects.project13.role": "Estudante de Engenharia da Computação",
+          "projects.project13.title": "Deep Analysis of Blockchain Networks Using TEEs",
+          "projects.project13.description": "Researched and prototyped a blockchain network leveraging Intel SGX and Arm TrustZone to analyze security-performance tradeoffs in trusted execution environments.",
+          "projects.project13.detail1": "Developed core TEE components in C using the Intel SGX SDK for secure enclave operations (attestation, sealing).",
+          "projects.project13.detail2": "Built non-TEE blockchain logic in Rust, interfacing with SGX via FFI for performance-critical operations.",
+          "projects.project13.detail3": "Implemented Arm TrustZone components (OP-TEE) in C for comparative analysis of TEE architectures.",
+          "projects.project13.detail4": "Created Linux kernel modules (C) to monitor and audit TEE-hosted execution at runtime.",
+          "projects.project13.detail5": "Designed benchmarking tools in Python to measure SGX/TrustZone overhead on consensus mechanisms.",
+          "projects.project13.detail6": "Explored hybrid architectures using Graphene-SGX to run unmodified blockchain nodes in enclaves.",
+          "projects.project13.company": "Federal University of Technology - Paraná",
+          "projects.project13.role": "Computer Engineering Student",
           
           // Project 14
-          "projects.project14.title": "Jogo 3D Pokémon Fan (Protótipo Não Lançado)",
-          "projects.project14.description": "Um jogo fan de Pokémon 3D em Unity (C#) com sistemas de jogabilidade principais, arquivado devido a preocupações com direitos autorais antes da conclusão dos assets.",
-          "projects.project14.detail1": "Construí sistemas modulares para batalhas por turnos, IA de NPC e inventário usando a arquitetura ECS da Unity.",
-          "projects.project14.detail2": "Implementei geração procedural de terreno com spawns de Pokémon selvagens específicos de bioma.",
-          "projects.project14.detail3": "Criei um ciclo dia/noite em tempo real afetando taxas de spawn e eventos no jogo.",
-          "projects.project14.detail4": "Desenvolvi funcionalidade de salvar/carregar usando serialização binária para progresso entre sessões.",
-          "projects.project14.detail5": "Projetei efeitos visuais baseados em shaders para animações de batalha (partículas, tremores de tela).",
-          "projects.project14.detail6": "Integrei pathfinding A* para movimento de treinadores/NPCs com evitação dinâmica de obstáculos.",
-          "projects.project14.role": "Engenheiro de Software",
+          "projects.project14.title": "3D Pokémon Fan Game (Unreleased Prototype)",
+          "projects.project14.description": "A 3D Pokémon fan game in Unity (C#) with core gameplay systems, archived due to copyright concerns before asset completion.",
+          "projects.project14.detail1": "Built modular systems for turn-based battles, NPC AI, and inventory using Unity's ECS architecture.",
+          "projects.project14.detail2": "Implemented procedural terrain generation with biome-specific wild Pokémon spawns.",
+          "projects.project14.detail3": "Created a real-time day/night cycle affecting spawn rates and in-game events.",
+          "projects.project14.detail4": "Developed save/load functionality using binary serialization for cross-session progress.",
+          "projects.project14.detail5": "Designed shader-based visual effects for battle animations (particles, screen shakes).",
+          "projects.project14.detail6": "Integrated A* pathfinding for trainer/NPC movement with dynamic obstacle avoidance.",
+          "projects.project14.role": "Software Engineer",
           
           // Project 15
-          "projects.project15.title": "Controlador MIDI Bluetooth",
-          "projects.project15.description": "Um controlador MIDI personalizado usando Arduino, com controle via aplicativo Android por Bluetooth para ajustes de parâmetros musicais em tempo real.",
-          "projects.project15.detail1": "Desenvolvi firmware Arduino (C) para ler entradas analógicas/digitais (potenciômetros, botões) e enviar sinais MIDI via shield MIDI.",
-          "projects.project15.detail2": "Projetei um circuito com multiplexadores para expandir capacidades de E/S, suportando 64 botões/knobs de controle.",
-          "projects.project15.detail3": "Implementei comunicação Bluetooth (HC-05) entre Arduino e Android para controle MIDI sem fio.",
-          "projects.project15.detail4": "Construí um aplicativo Android (Java) com presets personalizáveis, mapeamento de faders/knobs e saída MIDI de baixa latência.",
-          "projects.project15.detail5": "Adicionei feedback em tempo real no aplicativo (ex: sincronização de posição de knobs) para garantir controle bidirecional perfeito.",
-          "projects.project15.role": "Engenheiro de Software",
+          "projects.project15.title": "Bluetooth MIDI Controller",
+          "projects.project15.description": "A custom MIDI controller using Arduino, with control via Android app over Bluetooth for real-time musical parameter adjustments.",
+          "projects.project15.detail1": "Developed Arduino firmware (C) to read analog/digital inputs (potentiometers, buttons) and send MIDI signals via MIDI shield.",
+          "projects.project15.detail2": "Designed a circuit with multiplexers to expand I/O capabilities, supporting 64 control buttons/knobs.",
+          "projects.project15.detail3": "Implemented Bluetooth communication (HC-05) between Arduino and Android for wireless MIDI control.",
+          "projects.project15.detail4": "Built an Android app (Java) with customizable presets, fader/knob mapping, and low-latency MIDI output.",
+          "projects.project15.detail5": "Added real-time feedback in the app (e.g., knob position syncing) to ensure perfect bidirectional control.",
+          "projects.project15.role": "Software Engineer",
           
           // Project 16
-          "projects.project16.title": "Marketplace de NFT",
-          "projects.project16.description": "Construí um marketplace de NFT descentralizado para explorar o desenvolvimento blockchain, com recursos de criação, leilões e negociações usando Solidity, Node.js e Next.js.",
-          "projects.project16.detail1": "Desenvolvi contratos inteligentes ERC-721 e ERC-1155 (Solidity) com criação, licitação e aplicação de royalties seguras.",
-          "projects.project16.detail2": "Criei uma API Nest.js para interagir com Ethereum (via Alchemy) para processamento de transações e monitoramento de eventos.",
-          "projects.project16.detail3": "Projetei um frontend Next.js (TypeScript/React) com integração de carteira (MetaMask, WalletConnect) e atualizações de UI em tempo real.",
-          "projects.project16.detail4": "Implementei IPFS para armazenamento descentralizado de metadados e ativos NFT.",
-          "projects.project16.detail5": "Adicionei mecânicas de leilão (lances cronometrados, preços de reserva) e divisões de royalties para vendas secundárias.",
-          "projects.project16.detail6": "Otimizei custos de gas com operações em lote e atualizações de contrato (ex: padrões de proxy).",
-          "projects.project16.role": "Engenheiro de Software",
+          "projects.project16.title": "NFT Marketplace",
+          "projects.project16.description": "Built a decentralized NFT marketplace to explore blockchain development, with features for creation, auctions, and trading using Solidity, Node.js, and Next.js.",
+          "projects.project16.detail1": "Developed ERC-721 and ERC-1155 smart contracts (Solidity) with secure minting, bidding, and royalty enforcement.",
+          "projects.project16.detail2": "Created a Nest.js API to interact with Ethereum (via Alchemy) for transaction processing and event monitoring.",
+          "projects.project16.detail3": "Designed a Next.js frontend (TypeScript/React) with wallet integration (MetaMask, WalletConnect) and real-time UI updates.",
+          "projects.project16.detail4": "Implemented IPFS for decentralized storage of NFT metadata and assets.",
+          "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
+          "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
+          "projects.project16.role": "Software Engineer",
           
           // Common Project Terms
           "projects.companyLabel": "Project by",
@@ -382,7 +418,11 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "contact.form.message": "Message",
           "contact.form.submit": "Send Message",
           "contact.form.sending": "Sending...",
-
+          "contact.location.value": "Toronto, Canada",
+          "contact.email.value": "luisfmazzu@gmail.com",
+          "contact.phone.value": "+55 (41) 99700-3955",
+          "contact.copied": "Copied",
+          
           // Footer
           "footer.tagline": "Building digital experiences that make a difference.",
           "footer.copyright": "All rights reserved.",
@@ -392,10 +432,10 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "language.portuguese": "Portuguese",
 
           // Chatbot
-          "chatbot.title": "Portfolio Assistant",
+          "chatbot.title": "Luis' Assistant",
           "chatbot.subtitle": "Ask me anything about my work",
           "chatbot.greeting":
-            "👋 Hi there! I'm the portfolio assistant. How can I help you today? You can ask about my experience, skills, or freelance work.",
+            "👋 Hi there! I'm Luis' assistant. How can I help you today? You can ask about my experience, skills, or freelance work.",
           "chatbot.placeholder": "Type your message...",
           "chatbot.typing": "Typing...",
           "chatbot.experience":
@@ -413,6 +453,9 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         pt: {
           "previous": "anterior",
           "next": "próximo",
+          // Common terms
+          "common.retry": "Tentar Novamente",
+          
           // Header
           "nav.home": "Início",
           "nav.about": "Sobre",
@@ -552,6 +595,33 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "skills.categories.backend": "Backend",
           "skills.categories.other": "Outras",
 
+          // Git Stats
+          "gitStats.title": "Estatísticas do Git",
+          "gitStats.description": "Minhas contribuições de código aberto e atividade no GitHub.",
+          "gitStats.totalCommits": "Total de Commits",
+          "gitStats.pullRequests": "Pull Requests",
+          "gitStats.contributionGraph": "Gráfico de Contribuições",
+          "gitStats.yearlyCommits": "Commits Anuais",
+          "gitStats.topLanguages": "Principais Linguagens",
+          "gitStats.contributionsIn": "contribuições em",
+          "gitStats.less": "Menos",
+          "gitStats.more": "Mais",
+          "gitStats.prev": "Anterior",
+          "gitStats.next": "Próximo",
+          "gitStats.loading": "Carregando Estatísticas do Git...",
+          "gitStats.months.jan": "Jan",
+          "gitStats.months.feb": "Fev",
+          "gitStats.months.mar": "Mar",
+          "gitStats.months.apr": "Abr",
+          "gitStats.months.may": "Mai",
+          "gitStats.months.jun": "Jun",
+          "gitStats.months.jul": "Jul",
+          "gitStats.months.aug": "Ago",
+          "gitStats.months.sep": "Set",
+          "gitStats.months.oct": "Out",
+          "gitStats.months.nov": "Nov",
+          "gitStats.months.dec": "Dez",
+
           // Projects
           "projects.title": "Meus Projetos",
           "projects.description": "Navegue pelos meus trabalhos recentes e projetos pessoais.",
@@ -618,131 +688,131 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           
           // Project 6 - 16
           "projects.project6.title": "Scrape Sense AI",
-          "projects.project6.description": "Uma plataforma de web scraping com IA que permite aos usuários extrair e estruturar dados de qualquer site usando consultas personalizáveis.",
-          "projects.project6.detail1": "Desenvolvi uma API Python/Flask com processamento assíncrono de tarefas para gerenciar trabalhos de web scraping em larga escala com eficiência, integrando limitação de taxa e rotação de proxy para evitar bloqueios de IP.",
-          "projects.project6.detail2": "Utilizei modelos de PNL da OpenAI para analisar e estruturar dados web não estruturados, melhorando a precisão em 30% em comparação com métodos tradicionais de scraping.",
-          "projects.project6.detail3": "Criei uma interface de usuário intuitiva e responsiva com TypeScript e Next.js, permitindo que os usuários configurem regras de scraping, visualizem resultados e exportem dados em múltiplos formatos (CSV, JSON).",
-          "projects.project6.detail4": "Implantei a aplicação na AWS usando EC2, S3, Lambda e RDS (PostgreSQL), garantindo alta disponibilidade e escalabilidade.",
-          "projects.project6.detail5": "Implementei autenticação segura baseada em JWT e um painel onde os usuários podem acompanhar trabalhos de scraping ativos, baixar resultados e gerenciar assinaturas.",
-          "projects.project6.detail6": "Integrei um sistema de proxy rotativo e automação de navegador headless (Playwright/Selenium) para contornar medidas anti-scraping, garantindo a recuperação bem-sucedida de dados de sites complexos.",
-          "projects.project6.role": "Engenheiro Full Stack",
+          "projects.project6.description": "An AI-powered web scraping platform that enables users to extract and structure data from any website using customizable queries.",
+          "projects.project6.detail1": "Developed a Python/Flask API with asynchronous task processing to efficiently manage large-scale web scraping jobs, integrating rate limiting and proxy rotation to avoid IP blocks.",
+          "projects.project6.detail2": "Utilized OpenAI NLP models to analyze and structure unstructured web data, improving accuracy by 30% compared to traditional scraping methods.",
+          "projects.project6.detail3": "Created an intuitive and responsive user interface with TypeScript and Next.js, allowing users to configure scraping rules, view results, and export data in multiple formats (CSV, JSON).",
+          "projects.project6.detail4": "Deployed the application on AWS using EC2, S3, Lambda, and RDS (PostgreSQL), ensuring high availability and scalability.",
+          "projects.project6.detail5": "Implemented secure JWT-based authentication and a dashboard where users can track active scraping jobs, download results, and manage subscriptions.",
+          "projects.project6.detail6": "Integrated a rotating proxy system and headless browser automation (Playwright/Selenium) to bypass anti-scraping measures, ensuring successful data retrieval from complex websites.",
+          "projects.project6.role": "Full Stack Engineer",
           
           "projects.project7.title": "TriviaGen AI",
-          "projects.project7.description": "Um aplicativo com IA que extrai dados, gera perguntas de trivialidades precisas com respostas corretas e cria distratores plausíveis.",
-          "projects.project7.detail1": "Utilizei Selenium para extrair dados estruturados de múltiplas fontes enquanto lidava com conteúdo dinâmico e evitava detecção de bots.",
-          "projects.project7.detail2": "Implementei técnicas de PNL com TensorFlow para analisar dados extraídos e gerar perguntas de trivialidades relevantes e baseadas em fatos.",
-          "projects.project7.detail3": "Desenvolvi um algoritmo para produzir respostas incorretas, mas contextualmente relacionadas, melhorando a dificuldade e o engajamento do quiz.",
-          "projects.project7.detail4": "Construí uma API escalável com Python e Django para gerenciar perguntas, envios de usuários e validação de respostas com PostgreSQL para armazenamento de dados.",
-          "projects.project7.detail5": "Integrei regras de validação para garantir que as perguntas geradas fossem coerentes, precisas e livres de duplicações.",
-          "projects.project7.detail6": "Projetei uma interface simples para os usuários personalizarem categorias de perguntas, dificuldade e exportarem quizzes em múltiplos formatos.",
+          "projects.project7.description": "An AI application that extracts data, generates accurate trivia questions with correct answers, and creates plausible distractors.",
+          "projects.project7.detail1": "Used Selenium to extract structured data from multiple sources while handling dynamic content and avoiding bot detection.",
+          "projects.project7.detail2": "Implemented NLP techniques with TensorFlow to analyze extracted data and generate relevant, fact-based trivia questions.",
+          "projects.project7.detail3": "Developed an algorithm to produce incorrect but contextually related answers, improving quiz difficulty and engagement.",
+          "projects.project7.detail4": "Built a scalable API with Python and Django to manage questions, user submissions, and answer validation with PostgreSQL for data storage.",
+          "projects.project7.detail5": "Integrated validation rules to ensure generated questions were coherent, accurate, and free of duplications.",
+          "projects.project7.detail6": "Designed a simple interface for users to customize question categories, difficulty, and export quizzes in multiple formats.",
           "projects.project7.company": "Ocarina Studios Inc.",
-          "projects.project7.role": "Engenheiro Full Stack",
+          "projects.project7.role": "Full Stack Engineer",
           
-          "projects.project8.title": "Programa Acelerador do Google",
-          "projects.project8.description": "Um dos 60 estúdios em todo o mundo selecionados para o acelerador do Google, obtendo mentoria especializada em análise de jogos e estratégia de negócios.",
-          "projects.project8.detail1": "Participei de workshops liderados pelo Google sobre estratégias de monetização, retenção e operações ao vivo.",
-          "projects.project8.detail2": "Otimizei KPIs principais (DAU, retenção) usando feedback de mentores e insights de coorte.",
-          "projects.project8.detail3": "Redesenhei a abordagem de operações ao vivo, impulsionando métricas de engajamento de jogadores.",
-          "projects.project8.detail4": "Construí conexões na indústria através de eventos de networking selecionados.",
-          "projects.project8.detail5": "Implementei testes A/B que aumentaram o tempo de sessão em 35%.",
-          "projects.project8.detail6": "Apliquei aprendizados para garantir financiamento adicional para o estúdio.",
+          "projects.project8.title": "Google Accelerator Program",
+          "projects.project8.description": "One of 60 studios worldwide selected for Google's accelerator, gaining specialized mentoring in game analytics and business strategy.",
+          "projects.project8.detail1": "Participated in Google-led workshops on monetization strategies, retention, and live operations.",
+          "projects.project8.detail2": "Optimized key KPIs (DAU, retention) using mentor feedback and cohort insights.",
+          "projects.project8.detail3": "Redesigned live operations approach, boosting player engagement metrics.",
+          "projects.project8.detail4": "Built industry connections through curated networking events.",
+          "projects.project8.detail5": "Implemented A/B testing that increased session time by 35%.",
+          "projects.project8.detail6": "Applied learnings to secure additional funding for the studio.",
           "projects.project8.company": "Ocarina Studios Inc.",
-          "projects.project8.role": "Gerente de Engenharia de Software",
+          "projects.project8.role": "Software Engineering Manager",
           
           // Project 9
           "projects.project9.title": "Dream Quiz",
-          "projects.project9.description": "Uma API de jogo gerenciando sessões de usuários, análises e processamento de dados em tempo real.",
-          "projects.project9.detail1": "Construí backend escalável com C#/.NET.",
-          "projects.project9.detail2": "Projetei esquemas MongoDB para desempenho otimizado de consultas analíticas.",
-          "projects.project9.detail3": "Implementei AWS Lambda para processamento de eventos com custo eficiente.",
-          "projects.project9.detail4": "Desenvolvi gerenciamento de sessão com cache Redis.",
-          "projects.project9.detail5": "Criei dashboards em tempo real usando pipelines de análise.",
-          "projects.project9.detail6": "Protegi API com JWT e limitação de taxa.",
+          "projects.project9.description": "A game API managing user sessions, analytics, and real-time data processing.",
+          "projects.project9.detail1": "Built scalable backend with C#/.NET.",
+          "projects.project9.detail2": "Designed MongoDB schemas for optimized analytical query performance.",
+          "projects.project9.detail3": "Implemented AWS Lambda for cost-efficient event processing.",
+          "projects.project9.detail4": "Developed session management with Redis caching.",
+          "projects.project9.detail5": "Created real-time dashboards using analytics pipelines.",
+          "projects.project9.detail6": "Secured API with JWT and rate limiting.",
           "projects.project9.company": "Ocarina Studios Inc.",
-          "projects.project9.role": "Engenheiro Full Stack",
+          "projects.project9.role": "Full Stack Engineer",
           
           // Project 10
           "projects.project10.title": "Save Your Brain: Trivia",
-          "projects.project10.description": "Uma API de jogo de trivia multiplayer de alto desempenho com matchmaking, rankings e jogabilidade em tempo real.",
-          "projects.project10.detail1": "Desenvolvi multiplayer em tempo real usando WebSockets com o modelo de concorrência do Golang.",
-          "projects.project10.detail2": "Construí matchmaking baseado em habilidades com classificação ELO e otimização de fila.",
-          "projects.project10.detail3": "Projetei leaderboards com Redis com classificações diárias/semanais/de todos os tempos.",
-          "projects.project10.detail4": "Criei sistemas anti-trapaça para validação de respostas e verificação de tempo.",
-          "projects.project10.detail5": "Implementei AWS DynamoDB para persistência de estado de jogo com baixa latência.",
-          "projects.project10.detail6": "Desenvolvi arquitetura de microsserviços com Gin para alta escalabilidade.",
+          "projects.project10.description": "A high-performance multiplayer trivia game API with matchmaking, rankings, and real-time gameplay.",
+          "projects.project10.detail1": "Developed real-time multiplayer using WebSockets with Golang's concurrency model.",
+          "projects.project10.detail2": "Built skill-based matchmaking with ELO ranking and queue optimization.",
+          "projects.project10.detail3": "Designed Redis-backed leaderboards with daily/weekly/all-time rankings.",
+          "projects.project10.detail4": "Created anti-cheating systems for answer validation and time verification.",
+          "projects.project10.detail5": "Implemented AWS DynamoDB for low-latency game state persistence.",
+          "projects.project10.detail6": "Developed microservice architecture with Gin for high scalability.",
           "projects.project10.company": "Ocarina Studios Inc.",
-          "projects.project10.role": "Engenheiro Full Stack",
+          "projects.project10.role": "Full Stack Engineer",
           
           // Project 11
           "projects.project11.title": "Maver",
-          "projects.project11.description": "Um aplicativo iOS que grava entrada de voz, converte em MIDI editável e transforma em sons de instrumentos, com suporte de uma API personalizada de processamento de áudio.",
-          "projects.project11.detail1": "Construí um aplicativo iOS baseado em SwiftUI com integração Core Audio para gravação de voz de alta fidelidade.",
-          "projects.project11.detail2": "Desenvolvi um algoritmo proprietário de detecção de notas para converter gravações de voz em notas MIDI.",
-          "projects.project11.detail3": "Criei um editor de faixas intuitivo com ajuste de notas, quantização e controle de tempo.",
-          "projects.project11.detail4": "Projetei uma API baseada em nuvem (Python/Flask) para aprimorar o processamento de áudio com correção de erros.",
-          "projects.project11.detail5": "Implementei autenticação de usuário e sincronização na nuvem para salvar e recuperar projetos em vários dispositivos.",
-          "projects.project11.detail6": "Otimizei a conversão MIDI para reduzir artefatos e melhorar a precisão musical.",
+          "projects.project11.description": "An iOS app that records voice input, converts to editable MIDI, and transforms into instrument sounds, supported by a custom audio processing API.",
+          "projects.project11.detail1": "Built a SwiftUI-based iOS app with Core Audio integration for high-fidelity voice recording.",
+          "projects.project11.detail2": "Developed a proprietary note detection algorithm to convert voice recordings to MIDI notes.",
+          "projects.project11.detail3": "Created an intuitive track editor with note adjustment, quantization, and tempo control.",
+          "projects.project11.detail4": "Designed a cloud-based API (Python/Flask) to enhance audio processing with error correction.",
+          "projects.project11.detail5": "Implemented user authentication and cloud synchronization to save and retrieve projects across multiple devices.",
+          "projects.project11.detail6": "Optimized MIDI conversion to reduce artifacts and improve musical accuracy.",
           "projects.project11.company": "Ocarina Studios Inc.",
-          "projects.project11.role": "Engenheiro Full Stack",
+          "projects.project11.role": "Full Stack Engineer",
           
           // Project 12
-          "projects.project12.title": "Auditoria de Software Segura com Intel SGX",
-          "projects.project12.description": "Uma modificação do kernel Linux aproveitando o Intel SGX para auditar e criar hash de programas executados em ambientes não confiáveis, garantindo registro à prova de adulteração.",
-          "projects.project12.detail1": "Modifiquei o kernel Linux para interceptar execuções de programas e extrair assinaturas de código em tempo real.",
-          "projects.project12.detail2": "Implementei enclaves Intel SGX para armazenar e verificar hashes de programas com segurança, protegendo-os de adulteração em nível de SO.",
-          "projects.project12.detail3": "Desenvolvi um daemon de auditoria leve baseado em C para monitorar eventos de criação e encerramento de processos.",
-          "projects.project12.detail4": "Projetei um mecanismo de cadeia de hash dentro do SGX para detectar modificações não autorizadas em assinaturas de programas registradas.",
-          "projects.project12.detail5": "Integrei atestação criptográfica para verificar a integridade do enclave antes de aceitar logs de auditoria.",
-          "projects.project12.company": "Universidade Tecnológica Federal do Paraná",
-          "projects.project12.role": "Estudante de Engenharia da Computação",
+          "projects.project12.title": "Secure Software Auditing with Intel SGX",
+          "projects.project12.description": "A Linux kernel modification leveraging Intel SGX to audit and hash programs executed in untrusted environments, ensuring tamper-proof logging.",
+          "projects.project12.detail1": "Modified the Linux kernel to intercept program executions and extract code signatures in real-time.",
+          "projects.project12.detail2": "Implemented Intel SGX enclaves to securely store and verify program hashes, protecting them from OS-level tampering.",
+          "projects.project12.detail3": "Developed a lightweight C-based auditing daemon to monitor process creation and termination events.",
+          "projects.project12.detail4": "Designed a hash chain mechanism within SGX to detect unauthorized modifications to registered program signatures.",
+          "projects.project12.detail5": "Integrated cryptographic attestation to verify enclave integrity before accepting audit logs.",
+          "projects.project12.company": "Federal University of Technology - Paraná",
+          "projects.project12.role": "Computer Engineering Student",
           
           // Project 13
-          "projects.project13.title": "Análise Profunda de Redes Blockchain Usando TEEs",
-          "projects.project13.description": "Pesquisei e prototipei uma rede blockchain aproveitando Intel SGX e Arm TrustZone para analisar compensações entre segurança e desempenho em ambientes de execução confiáveis.",
-          "projects.project13.detail1": "Desenvolvi componentes principais de TEE em C usando o SDK Intel SGX para operações seguras de enclave (atestação, vedação).",
-          "projects.project13.detail2": "Construí lógica blockchain não-TEE em Rust, com interface com SGX via FFI para operações críticas de desempenho.",
-          "projects.project13.detail3": "Implementei componentes Arm TrustZone (OP-TEE) em C para análise comparativa de arquiteturas TEE.",
-          "projects.project13.detail4": "Criei módulos de kernel Linux (C) para monitorar e auditar a execução hospedada em TEE em tempo de execução.",
-          "projects.project13.detail5": "Projetei ferramentas de benchmarking em Python para medir a sobrecarga do SGX/TrustZone nos mecanismos de consenso.",
-          "projects.project13.detail6": "Explorei arquiteturas híbridas usando Graphene-SGX para executar nós blockchain não modificados em enclaves.",
-          "projects.project13.company": "Universidade Tecnológica Federal do Paraná",
-          "projects.project13.role": "Estudante de Engenharia da Computação",
+          "projects.project13.title": "Deep Analysis of Blockchain Networks Using TEEs",
+          "projects.project13.description": "Researched and prototyped a blockchain network leveraging Intel SGX and Arm TrustZone to analyze security-performance tradeoffs in trusted execution environments.",
+          "projects.project13.detail1": "Developed core TEE components in C using the Intel SGX SDK for secure enclave operations (attestation, sealing).",
+          "projects.project13.detail2": "Built non-TEE blockchain logic in Rust, interfacing with SGX via FFI for performance-critical operations.",
+          "projects.project13.detail3": "Implemented Arm TrustZone components (OP-TEE) in C for comparative analysis of TEE architectures.",
+          "projects.project13.detail4": "Created Linux kernel modules (C) to monitor and audit TEE-hosted execution at runtime.",
+          "projects.project13.detail5": "Designed benchmarking tools in Python to measure SGX/TrustZone overhead on consensus mechanisms.",
+          "projects.project13.detail6": "Explored hybrid architectures using Graphene-SGX to run unmodified blockchain nodes in enclaves.",
+          "projects.project13.company": "Federal University of Technology - Paraná",
+          "projects.project13.role": "Computer Engineering Student",
           
           // Project 14
-          "projects.project14.title": "Jogo 3D Pokémon Fan (Protótipo Não Lançado)",
-          "projects.project14.description": "Um jogo fan de Pokémon 3D em Unity (C#) com sistemas de jogabilidade principais, arquivado devido a preocupações com direitos autorais antes da conclusão dos assets.",
-          "projects.project14.detail1": "Construí sistemas modulares para batalhas por turnos, IA de NPC e inventário usando a arquitetura ECS da Unity.",
-          "projects.project14.detail2": "Implementei geração procedural de terreno com spawns de Pokémon selvagens específicos de bioma.",
-          "projects.project14.detail3": "Criei um ciclo dia/noite em tempo real afetando taxas de spawn e eventos no jogo.",
-          "projects.project14.detail4": "Desenvolvi funcionalidade de salvar/carregar usando serialização binária para progresso entre sessões.",
-          "projects.project14.detail5": "Projetei efeitos visuais baseados em shaders para animações de batalha (partículas, tremores de tela).",
-          "projects.project14.detail6": "Integrei pathfinding A* para movimento de treinadores/NPCs com evitação dinâmica de obstáculos.",
-          "projects.project14.role": "Engenheiro de Software",
+          "projects.project14.title": "3D Pokémon Fan Game (Unreleased Prototype)",
+          "projects.project14.description": "A 3D Pokémon fan game in Unity (C#) with core gameplay systems, archived due to copyright concerns before asset completion.",
+          "projects.project14.detail1": "Built modular systems for turn-based battles, NPC AI, and inventory using Unity's ECS architecture.",
+          "projects.project14.detail2": "Implemented procedural terrain generation with biome-specific wild Pokémon spawns.",
+          "projects.project14.detail3": "Created a real-time day/night cycle affecting spawn rates and in-game events.",
+          "projects.project14.detail4": "Developed save/load functionality using binary serialization for cross-session progress.",
+          "projects.project14.detail5": "Designed shader-based visual effects for battle animations (particles, screen shakes).",
+          "projects.project14.detail6": "Integrated A* pathfinding for trainer/NPC movement with dynamic obstacle avoidance.",
+          "projects.project14.role": "Software Engineer",
           
           // Project 15
-          "projects.project15.title": "Controlador MIDI Bluetooth",
-          "projects.project15.description": "Um controlador MIDI personalizado usando Arduino, com controle via aplicativo Android por Bluetooth para ajustes de parâmetros musicais em tempo real.",
-          "projects.project15.detail1": "Desenvolvi firmware Arduino (C) para ler entradas analógicas/digitais (potenciômetros, botões) e enviar sinais MIDI via shield MIDI.",
-          "projects.project15.detail2": "Projetei um circuito com multiplexadores para expandir capacidades de E/S, suportando 64 botões/knobs de controle.",
-          "projects.project15.detail3": "Implementei comunicação Bluetooth (HC-05) entre Arduino e Android para controle MIDI sem fio.",
-          "projects.project15.detail4": "Construí um aplicativo Android (Java) com presets personalizáveis, mapeamento de faders/knobs e saída MIDI de baixa latência.",
-          "projects.project15.detail5": "Adicionei feedback em tempo real no aplicativo (ex: sincronização de posição de knobs) para garantir controle bidirecional perfeito.",
-          "projects.project15.role": "Engenheiro de Software",
+          "projects.project15.title": "Bluetooth MIDI Controller",
+          "projects.project15.description": "A custom MIDI controller using Arduino, with control via Android app over Bluetooth for real-time musical parameter adjustments.",
+          "projects.project15.detail1": "Developed Arduino firmware (C) to read analog/digital inputs (potentiometers, buttons) and send MIDI signals via MIDI shield.",
+          "projects.project15.detail2": "Designed a circuit with multiplexers to expand I/O capabilities, supporting 64 control buttons/knobs.",
+          "projects.project15.detail3": "Implemented Bluetooth communication (HC-05) between Arduino and Android for wireless MIDI control.",
+          "projects.project15.detail4": "Built an Android app (Java) with customizable presets, fader/knob mapping, and low-latency MIDI output.",
+          "projects.project15.detail5": "Added real-time feedback in the app (e.g., knob position syncing) to ensure perfect bidirectional control.",
+          "projects.project15.role": "Software Engineer",
           
           // Project 16
-          "projects.project16.title": "Marketplace de NFT",
-          "projects.project16.description": "Construí um marketplace de NFT descentralizado para explorar o desenvolvimento blockchain, com recursos de criação, leilões e negociações usando Solidity, Node.js e Next.js.",
-          "projects.project16.detail1": "Desenvolvi contratos inteligentes ERC-721 e ERC-1155 (Solidity) com criação, licitação e aplicação de royalties seguras.",
-          "projects.project16.detail2": "Criei uma API Nest.js para interagir com Ethereum (via Alchemy) para processamento de transações e monitoramento de eventos.",
-          "projects.project16.detail3": "Projetei um frontend Next.js (TypeScript/React) com integração de carteira (MetaMask, WalletConnect) e atualizações de UI em tempo real.",
-          "projects.project16.detail4": "Implementei IPFS para armazenamento descentralizado de metadados e ativos NFT.",
-          "projects.project16.detail5": "Adicionei mecânicas de leilão (lances cronometrados, preços de reserva) e divisões de royalties para vendas secundárias.",
-          "projects.project16.detail6": "Otimizei custos de gas com operações em lote e atualizações de contrato (ex: padrões de proxy).",
-          "projects.project16.role": "Engenheiro de Software",
+          "projects.project16.title": "NFT Marketplace",
+          "projects.project16.description": "Built a decentralized NFT marketplace to explore blockchain development, with features for creation, auctions, and trading using Solidity, Node.js, and Next.js.",
+          "projects.project16.detail1": "Developed ERC-721 and ERC-1155 smart contracts (Solidity) with secure minting, bidding, and royalty enforcement.",
+          "projects.project16.detail2": "Created a Nest.js API to interact with Ethereum (via Alchemy) for transaction processing and event monitoring.",
+          "projects.project16.detail3": "Designed a Next.js frontend (TypeScript/React) with wallet integration (MetaMask, WalletConnect) and real-time UI updates.",
+          "projects.project16.detail4": "Implemented IPFS for decentralized storage of NFT metadata and assets.",
+          "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
+          "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
+          "projects.project16.role": "Software Engineer",
           
           // Common Project Terms
           "projects.companyLabel": "Projeto por",
-          "projects.roleLabel": "Função",
+          "projects.roleLabel": "Função:",
           "projects.detailsLabel": "Detalhes do Projeto:",
           "projects.contributionLabel": "Minha Contribuição:",
           "projects.companySiteLabel": "Site da Empresa",
@@ -767,6 +837,17 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "contact.form.message": "Mensagem",
           "contact.form.submit": "Enviar Mensagem",
           "contact.form.sending": "Enviando...",
+          "contact.location.value": "Toronto, Canada",
+          "contact.email.value": "luisfmazzu@gmail.com",
+          "contact.phone.value": "+55 (41) 99700-3955",
+          "contact.copied": "Copied",
+          "contact.form.success.title": "Mensagem enviada com sucesso!!",
+          "contact.form.success.description": "Obrigado por entrar em contato. Eu responderei o mais breve possível.",
+          "contact.form.success.newMessage": "Enviar outra mensagem",
+          "contact.toast.success.title": "Mensagem enviada com sucesso!",
+          "contact.toast.success.description": "Obrigado por sua mensagem. Eu responderei o mais breve possível.",
+          "contact.toast.error.title": "Erro ao enviar mensagem",
+          "contact.toast.error.description": "Por favor, tente novamente ou entre em contato comigo diretamente.",
 
           // Footer
           "footer.tagline": "Construindo experiências digitais que fazem a diferença.",
@@ -803,22 +884,27 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
     }
 
     loadTranslations()
-  }, [])
+  }, [isClient])
 
   const changeLanguage = (lang: Language) => {
     setLanguage(lang)
-    // In a real app, you might want to store this in localStorage
-    localStorage.setItem("language", lang)
+    // Only store in localStorage on the client side
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("language", lang)
+    }
   }
 
-  // Load language preference from localStorage on initial load
+  // Load language preference from localStorage on initial load - only on client
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language") as Language
-    if (savedLanguage && (savedLanguage === "en" || savedLanguage === "pt")) {
-      setLanguage(savedLanguage)
+    // Only run on the client side
+    if (isClient) {
+      const savedLanguage = localStorage.getItem("language") as Language
+      if (savedLanguage && (savedLanguage === "en" || savedLanguage === "pt")) {
+        setLanguage(savedLanguage)
+      }
     }
-  }, [])
-
+  }, [isClient]) // Depend on isClient to ensure we only run after hydration
+  
   const t = (key: string): string => {
     if (!isLoaded) return key
     return translations[language]?.[key] || key

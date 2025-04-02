@@ -69,10 +69,32 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
+    const [isClient, setIsClient] = React.useState(false)
+
+    // Check if we're on the client side
+    React.useEffect(() => {
+      setIsClient(true)
+    }, [])
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     const [_open, _setOpen] = React.useState(defaultOpen)
+    
+    // Read cookie value for sidebar state on client side
+    React.useEffect(() => {
+      if (isClient && typeof document !== 'undefined') {
+        const cookies = document.cookie.split(';')
+        const sidebarCookie = cookies.find(cookie => 
+          cookie.trim().startsWith(`${SIDEBAR_COOKIE_NAME}=`)
+        )
+        
+        if (sidebarCookie) {
+          const sidebarState = sidebarCookie.split('=')[1] === 'true'
+          _setOpen(sidebarState)
+        }
+      }
+    }, [isClient])
+    
     const open = openProp ?? _open
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -83,8 +105,11 @@ const SidebarProvider = React.forwardRef<
           _setOpen(openState)
         }
 
-        // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        // Only set cookie on the client side
+        if (typeof document !== 'undefined') {
+          // This sets the cookie to keep the sidebar state.
+          document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        }
       },
       [setOpenProp, open]
     )
@@ -98,6 +123,9 @@ const SidebarProvider = React.forwardRef<
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
+      // Only add event listeners on the client side
+      if (typeof window === 'undefined') return;
+      
       const handleKeyDown = (event: KeyboardEvent) => {
         if (
           event.key === SIDEBAR_KEYBOARD_SHORTCUT &&

@@ -1,5 +1,5 @@
-import { getGitHubContributions, GitHubContributions } from "@/app/api/github-api"
-import { getGitLabContributions, GitLabContributions } from "@/app/api/gitlab-api"
+import { GitLabContributions } from "@/app/api/gitlab-api"
+import { GitHubContributions } from "@/app/api/github-api"
 import privateContributions from "./git-private-contributions.json"
 
 export interface GitStatsData {
@@ -21,6 +21,39 @@ export interface GitStatsData {
       }>
     }
   >
+}
+
+// Helper function to fetch GitLab contributions from the API route
+async function fetchGitLabContributions(): Promise<GitLabContributions | string> {
+  try {
+    const response = await fetch('/api/gitlab-contributions');
+    if (!response.ok) {
+      const errorData = await response.json();
+      return errorData.error || 'Failed to fetch GitLab contributions';
+    }
+    return await response.json();
+  } catch (error: any) {
+    console.error('Error fetching GitLab contributions:', error);
+    return error.message || 'Unknown error fetching GitLab contributions';
+  }
+}
+
+// Helper function to fetch GitHub contributions from the API route
+async function fetchGitHubContributions(availableYears: string[]): Promise<GitHubContributions> {
+  try {
+    const yearsParam = availableYears.join(',');
+    const response = await fetch(`/api/github-contributions?years=${yearsParam}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch GitHub contributions');
+    }
+    
+    return await response.json();
+  } catch (error: any) {
+    console.error('Error fetching GitHub contributions:', error);
+    throw error;
+  }
 }
 
 export async function getGitContributions(availableYears: string[]): Promise<GitStatsData> {
@@ -46,8 +79,8 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
     // Next: fetch your GitHub and GitLab data, plus the private contributions
 
     const [gitHubContributions, gitLabContributions] = await Promise.all([
-      getGitHubContributions(availableYears),
-      getGitLabContributions()
+      fetchGitHubContributions(availableYears), // Use the new server-side API route function
+      fetchGitLabContributions() // Use the new server-side API route function
     ]);
 
     // Process GitHub data

@@ -1,8 +1,15 @@
 import axios from "axios"
 
 const GITLAB_API_BASE_URL = "https://gitlab.com/api/v4"
-const GITLAB_PERSONAL_ACCESS_TOKEN = process.env.NEXT_PUBLIC_GITLAB_TOKEN
-const GITLAB_USERNAME = process.env.NEXT_PUBLIC_GITLAB_USERNAME
+
+// Get GitLab credentials from environment variables
+function getCredentials() {
+  // Access environment variables inside a function to ensure they are retrieved at runtime
+  const token = process.env.GITLAB_TOKEN;
+  const username = process.env.GITLAB_USERNAME;
+  
+  return { token, username };
+}
 
 export interface GitLabContributions {
   commits: {
@@ -15,22 +22,36 @@ export interface GitLabContributions {
   }[];
 }
 
-const fetchUserId = async () => {
-  const response = await axios.get(`${GITLAB_API_BASE_URL}/users`, {
-    params: { username: GITLAB_USERNAME },
-    headers: { Authorization: `Bearer ${GITLAB_PERSONAL_ACCESS_TOKEN}` },
-  })
-  return response.data[0]?.id
+const fetchUserId = async (token: string, username: string) => {
+  try {
+    const response = await axios.get(`${GITLAB_API_BASE_URL}/users`, {
+      params: { username: username },
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    
+    if (response.data && response.data.length > 0) {
+      const userId = response.data[0]?.id;
+      return userId;
+    } else {
+      return null;
+    }
+  } catch (error: any) {
+    if (error.response) {
+      console.error(`Response status: ${error.response.status}`);
+      console.error(`Response data:`, error.response.data);
+    }
+    return null;
+  }
 }
 
-const fetchUserContributions = async (userId: number, start?: string, end?: string) => {
+const fetchUserContributions = async (token: string, userId: number, start?: string, end?: string) => {
   let gitLabContributions: any[] = [];
   let page = 1;
   let hasMore = true;
 
   while (hasMore) {
       // Fetch commit events (pushed commits)
-      const commitsResponse = await fetchCommits(userId, page, start, end)
+      const commitsResponse = await fetchCommits(token, userId, page, start, end)
       
       gitLabContributions = gitLabContributions.concat(commitsResponse.data);
       hasMore = commitsResponse.data.length === 100; // If the response has 100 items, there are more pages
@@ -43,7 +64,7 @@ const fetchUserContributions = async (userId: number, start?: string, end?: stri
   hasMore = true;
 
   while (hasMore) {
-      const mergeRequestsResponse = await fetchMergeRequests(userId, page)
+      const mergeRequestsResponse = await fetchMergeRequests(token, userId, page)
       allMergeRequests = allMergeRequests.concat(mergeRequestsResponse);
       hasMore = mergeRequestsResponse.length === 100;
       page += 1;
@@ -56,7 +77,7 @@ const fetchUserContributions = async (userId: number, start?: string, end?: stri
   };
 };
 
-const fetchCommits = async (userId: number, page : number, start?: string, end?: string) => {
+const fetchCommits = async (token: string, userId: number, page : number, start?: string, end?: string) => {
   const params: any = { action: "pushed", page, per_page: 100 };
       if (start) params.after = start;
       if (end) params.before = end;
@@ -65,18 +86,18 @@ const fetchCommits = async (userId: number, page : number, start?: string, end?:
         `${GITLAB_API_BASE_URL}/users/${userId}/events`,
         {
             params,
-            headers: { Authorization: `Bearer ${GITLAB_PERSONAL_ACCESS_TOKEN}` },
+            headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response
 }
 
-const fetchMergeRequests = async (userId: number, page : number) => {
+const fetchMergeRequests = async (token: string, userId: number, page : number) => {
   const response = await axios.get(
     `${GITLAB_API_BASE_URL}/merge_requests`,
     {
       params: { author_id: userId, page, per_page: 100},
-      headers: { Authorization: `Bearer ${GITLAB_PERSONAL_ACCESS_TOKEN}` },
+      headers: { Authorization: `Bearer ${token}` },
     }
   )
   return response.data
@@ -84,11 +105,13 @@ const fetchMergeRequests = async (userId: number, page : number) => {
 
 export async function getGitLabContributions(): Promise<GitLabContributions | string> {
   try {
-    if (!GITLAB_PERSONAL_ACCESS_TOKEN || !GITLAB_USERNAME) {
+    const { token, username } = getCredentials();
+    if (!token || !username) {
+      console.warn("Missing GitLab credentials - GitLab contribution data may not be available");
       return "Missing GitLab credentials"
     }
     
-    const userId = await fetchUserId();
+    const userId = await fetchUserId(token, username);
     if (!userId) {
       return "User not found"
     }
@@ -98,7 +121,7 @@ export async function getGitLabContributions(): Promise<GitLabContributions | st
     const end = new Date(currentYear, 11, 31).toISOString().split("T")[0]
     
     // Get commits data
-    const commitsData = await fetchUserContributions(userId, start, end)
+    const commitsData = await fetchUserContributions(token, userId, start, end)
     
     // Get merge requests data
     let allMergeRequests: any[] = [];
@@ -106,7 +129,7 @@ export async function getGitLabContributions(): Promise<GitLabContributions | st
     let hasMore = true;
 
     while (hasMore) {
-      const mergeRequestsResponse = await fetchMergeRequests(userId, page)
+      const mergeRequestsResponse = await fetchMergeRequests(token, userId, page)
       allMergeRequests = allMergeRequests.concat(mergeRequestsResponse);
       hasMore = mergeRequestsResponse.length === 100;
       page += 1;

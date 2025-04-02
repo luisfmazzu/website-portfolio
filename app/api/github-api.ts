@@ -1,5 +1,21 @@
 const GITHUB_GRAPHQL_API = "https://api.github.com/graphql";
 
+// Function to get GitHub credentials from environment variables
+function getCredentials() {
+  // Access environment variables inside a function to ensure they are retrieved at runtime
+  const token = process.env.GITHUB_TOKEN;
+  const username = process.env.GITHUB_USERNAME;
+  
+  // Log for debugging (will only show in server logs)
+  console.log("GitHub API credentials check:", {
+    tokenExists: !!token,
+    usernameExists: !!username,
+    nodeEnv: process.env.NODE_ENV,
+  });
+  
+  return { token, username };
+}
+
 interface ContributionDay {
   date: string;
   contributionCount: number;
@@ -65,8 +81,11 @@ export async function getGitHubContributions(availableYears : Array<string>): Pr
 }
 
 async function getGitHubCommits(yearInt : number) {
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME
-  const github_token = process.env.NEXT_PUBLIC_GITHUB_TOKEN
+  const { token, username } = getCredentials();
+
+  if (!username || !token) {
+    return { error: "Missing GitHub credentials" };
+  }
 
   const query = {
     "query": `query {
@@ -97,7 +116,7 @@ async function getGitHubCommits(yearInt : number) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${github_token}`,
+        Authorization: `bearer ${token}`,
       },
       body: JSON.stringify(query),
     })
@@ -117,8 +136,11 @@ async function getGitHubCommits(yearInt : number) {
 }
 
 export async function getGitHubPullRequest(availableYears : Array<string>) {
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME
-  const github_token = process.env.NEXT_PUBLIC_GITHUB_TOKEN
+  const { token, username } = getCredentials();
+
+  if (!username || !token) {
+    return [{ error: "Missing GitHub credentials" }];
+  }
 
   // Fetch pull requests for all years in parallel
   const pullRequestPromises = availableYears.map(async (year : string) => {
@@ -143,7 +165,7 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${github_token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(query),
     });

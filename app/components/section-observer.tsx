@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface SectionObserverProps {
@@ -37,8 +37,17 @@ export default function SectionObserver({
   staggerChildren = false,
 }: SectionObserverProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const [isClient, setIsClient] = useState(false)
+
+  // Set isClient to true once component is mounted
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
+    // Only use IntersectionObserver on the client
+    if (!isClient) return
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -83,7 +92,7 @@ export default function SectionObserver({
         observer.unobserve(currentRef)
       }
     }
-  }, [animation, delay, once, rootMargin, threshold, staggerChildren])
+  }, [animation, delay, once, rootMargin, threshold, staggerChildren, isClient])
 
   return (
     <div ref={ref} className={cn("opacity-0", className)}>

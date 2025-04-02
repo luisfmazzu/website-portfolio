@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageSquare, X, Send, Loader2, Bot } from "lucide-react"
+import { MessageSquare, X, Send, Loader2, Bot, Terminal, Cpu, Code, Zap, Sparkles } from "lucide-react"
 import { Button } from "@/app/components/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/avatar"
@@ -62,7 +62,7 @@ export default function Chatbot() {
     setInputValue(e.target.value)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (inputValue.trim() === "") return
 
@@ -77,42 +77,112 @@ export default function Chatbot() {
     setInputValue("")
     setIsTyping(true)
 
-    // Simulate bot response
-    setTimeout(
-      () => {
-        const botResponse = generateBotResponse(inputValue)
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: botResponse,
-          sender: "bot",
-          timestamp: new Date(),
-        }
-        setMessages((prev) => [...prev, botMessage])
-        setIsTyping(false)
-      },
-      1000 + Math.random() * 1000,
-    ) // Random delay between 1-2 seconds
+    try {
+      // Get OpenAI response
+      const botResponse = await getBotResponse(inputValue, messages)
+      
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: botResponse,
+        sender: "bot",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, botMessage])
+    } catch (error) {
+      console.error("Error getting bot response:", error)
+      
+      // Fallback message in case of error
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: t("chatbot.fallback"),
+        sender: "bot",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsTyping(false)
+    }
   }
 
-  const generateBotResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase()
+  const getBotResponse = async (userInput: string, currentMessages: Message[]): Promise<string> => {
+    // Create the system prompt with experience, skills, and projects
+    const systemPrompt = `You are a helpful virtual assistant for Luis Ortiz's portfolio website. 
+    
+Your role is to help visitors learn about Luis and his work by answering their questions based on the following information:
 
-    // Simple keyword matching for demo purposes
-    if (input.includes("experience") || input.includes("work")) {
-      return t("chatbot.experience")
-    } else if (input.includes("skill") || input.includes("technology") || input.includes("tech stack")) {
-      return t("chatbot.skills")
-    } else if (input.includes("freelance") || input.includes("hire") || input.includes("project")) {
-      return t("chatbot.freelance")
-    } else if (input.includes("contact") || input.includes("email") || input.includes("phone")) {
-      return t("chatbot.contact")
-    } else if (input.includes("hello") || input.includes("hi") || input.includes("hey")) {
-      return t("chatbot.greeting")
-    } else if (input.includes("thank")) {
-      return t("chatbot.thanks")
-    } else {
-      return t("chatbot.fallback")
+EXPERIENCE:
+- Software Engineering Manager at Ocarina Studios (2024-2025): Led multiple engineering teams, increased team retention by 40%, reduced onboarding time by 40%, and accelerated feature development time by 50% through rapid prototyping processes.
+
+- Full-Stack Engineer at Elixir Technologies Ltd. (2022-2024): Built a decentralized market-making platform that reached billions in trading volume and $50M+ TVL. Designed systems supporting over 100,000 validators and implemented high-performance algorithms for SLA compliance.
+
+- Full-Stack Software Engineer, Freelancer (2021-2023): Developed multiple successful projects including an irrigation mobile app, a decentralized storage system that improved file retrieval speeds by multiple times, and an AI-powered web scraping platform.
+
+- Interview Engineer Contractor at Karat (2021-2023): Conducted over 100 technical assessments globally and performed hundreds of interview reviews as part of the quality control team.
+
+- Full-Stack Software Engineer Consultant at Ocarina Studios (2021-2023): Led engineering hiring process, developed apps for audio conversion and trivia creation, and fully managed the lifecycle of multiple projects from requirements gathering to deployment.
+
+- Lead Software Engineer at Agres Electronic Systems (2017-2020): Maintained software for agricultural automation product deployed on over 1,000,000 devices. Developed a Seeding Monitor feature that increased product sales by 100% in one year. Led engineering hiring that expanded the team by 300%.
+
+- Junior Software Engineer at Tales Inc. (2016-2017): Automated machinery using PLCs and computer vision, reducing manual operations by more than 50% and increasing quality assurance by over 50%.
+
+SKILLS:
+- Programming Languages: JavaScript, TypeScript, Python, Golang, C#, C++, C, Solidity (junior)
+- Frontend: React, Next.js, HTML, CSS, Tailwind
+- Backend: Node.js, Express, Nest.js, Django, Flask, FastAPI, Gin
+- Databases: PostgreSQL, MongoDB, Redis
+- Cloud: AWS, Docker, Kafka
+- Other: Git, DevOps, Leadership, Mentoring
+
+PROJECTS:
+- Elixir Protocol: A decentralized market-making platform in the blockchain
+- Vintality: An irrigation mobile app with sensor hardware integration
+- Portfolio Website: Personal responsive portfolio site with dark mode and translations
+- Nebula Storage: A decentralized storage and CDN using Ethereum and IPFS
+- Agronave PRO: Advanced agricultural automation system
+- Scrape Sense AI: AI-powered web scraping platform
+- TriviaGen AI: AI application for generating trivia questions
+- Google Accelerator Program: One of 60 studios selected globally for mentorship
+- Dream Quiz: A game API managing user sessions, analytics, and real-time data processing
+- Save Your Brain: Trivia: A high-performance multiplayer trivia game API with matchmaking and rankings
+- Maver: An iOS app that records voice input, converts to editable MIDI, and transforms into instrument sounds
+- Secure Software Auditing with Intel SGX: A Linux kernel modification leveraging Intel SGX for tamper-proof program auditing
+- In-depth Analysis of Blockchain Networks Using TEEs: Research project analyzing security vs. performance tradeoffs in trusted execution environments
+- 3D Pokémon Fan Game: Unity-based 3D game prototype with turn-based battles and procedural terrain generation
+- Bluetooth MIDI Controller: Custom MIDI controller using Arduino with Bluetooth control via Android app
+- NFT Marketplace: Decentralized NFT marketplace with creation, auctions, and trading built with Solidity and Next.js
+
+Luis availability is usually immediately, always instruct them to contact him directly that Luis will get back to them as soon as possible.
+
+Keep your responses concise, helpful, and in a friendly tone. If you're asked about technical details that aren't provided, you can use your general knowledge but make it clear when you're not speaking specifically about Luis's work.
+You can also ask for more information if needed. You can be extra positive about Luis's work and skills.`;
+
+    // Format the conversation history for the API
+    const conversationHistory = currentMessages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    }));
+
+    // Prepare the request to OpenAI API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...conversationHistory,
+          { role: 'user', content: userInput }
+        ]
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get response from AI');
     }
+
+    const data = await response.json();
+    return data.content || t("chatbot.fallback");
   }
 
   // Animation variants
@@ -120,7 +190,7 @@ export default function Chatbot() {
     initial: { scale: 0, rotate: -180 },
     animate: { scale: 1, rotate: 0 },
     tap: { scale: 0.9 },
-    hover: { scale: 1.1, boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)" },
+    hover: { scale: 1.1, boxShadow: "0 0 20px rgba(99, 102, 241, 0.7)" },
   }
 
   const chatWindowVariants = {
@@ -135,21 +205,95 @@ export default function Chatbot() {
     exit: { opacity: 0, x: 20 },
   }
 
+  // Tech-themed gradient animation for button background
+  const buttonGradientAnimation = {
+    background: [
+      "linear-gradient(45deg, #4f46e5, #8b5cf6)",
+      "linear-gradient(45deg, #6366f1, #a855f7)",
+      "linear-gradient(45deg, #3b82f6, #9333ea)",
+      "linear-gradient(45deg, #4f46e5, #8b5cf6)",
+    ],
+    transition: { 
+      duration: 10, 
+      repeat: Infinity, 
+      ease: "linear" 
+    }
+  }
+
+  const iconAnimation = {
+    hidden: { opacity: 0, rotateY: 90 },
+    visible: { 
+      opacity: 1, 
+      rotateY: 0,
+      transition: { duration: 0.5 }
+    },
+    exit: { 
+      opacity: 0, 
+      rotateY: 90,
+      transition: { duration: 0.3 }
+    }
+  }
+
+  // Cycle through tech icons
+  const [iconIndex, setIconIndex] = useState(0)
+  const techIcons = [
+    <Cpu key="cpu" className="h-7 w-7" />,
+    <Terminal key="terminal" className="h-7 w-7" />,
+    <Code key="code" className="h-7 w-7" />,
+    <Zap key="zap" className="h-7 w-7" />,
+    <MessageSquare key="message" className="h-7 w-7" />
+  ]
+
+  useEffect(() => {
+    if (!isOpen) {
+      const interval = setInterval(() => {
+        setIconIndex((prev) => (prev + 1) % techIcons.length)
+      }, 2000)
+      return () => clearInterval(interval)
+    }
+  }, [isOpen])
+
+  // Attention indicator animation
+  const pulseAnimation = {
+    scale: [1, 1.1, 1],
+    boxShadow: [
+      "0 0 0 0 rgba(99, 102, 241, 0.4)",
+      "0 0 0 10px rgba(99, 102, 241, 0)",
+      "0 0 0 0 rgba(99, 102, 241, 0)"
+    ],
+    transition: { 
+      duration: 2, 
+      repeat: Infinity,
+      ease: "easeInOut" 
+    }
+  }
+
   return (
     <>
-      {/* Chat button */}
+      {/* Chat button with attention indicator */}
       <motion.div
         className="fixed bottom-6 right-6 z-50"
         initial="initial"
         animate="animate"
         whileTap="tap"
-        whilehover="hover"
+        whileHover="hover"
         variants={chatButtonVariants}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
       >
+        {/* Attention pulse indicator */}
+        {!isOpen && (
+          <motion.div 
+            className="absolute inset-0 rounded-full bg-indigo-500/30"
+            animate={pulseAnimation}
+          />
+        )}
+        <motion.div
+          animate={buttonGradientAnimation}
+          className="absolute inset-0 rounded-full blur-md opacity-70"
+        />
         <Button
           onClick={toggleChat}
-          className={`w-14 h-14 rounded-full shadow-lg ${isOpen ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600"}`}
+          className={`relative w-16 h-16 rounded-full shadow-lg backdrop-blur-sm ${isOpen ? "bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700" : "bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700"}`}
           aria-label={isOpen ? "Close chat" : "Open chat"}
         >
           <AnimatePresence mode="wait">
@@ -159,23 +303,38 @@ export default function Chatbot() {
                 initial={{ rotate: -90, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.3 }}
               >
-                <X className="h-6 w-6" />
+                <X className="h-7 w-7" />
               </motion.div>
             ) : (
               <motion.div
-                key="chat"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                key="tech-icon"
+                variants={iconAnimation}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
               >
-                <MessageSquare className="h-6 w-6" />
+                {techIcons[iconIndex]}
               </motion.div>
             )}
           </AnimatePresence>
         </Button>
+        
+        {/* "Chat with me" indicator text */}
+        {!isOpen && (
+          <motion.div 
+            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-white dark:bg-cool-900 px-3 py-1 rounded-full shadow-md whitespace-nowrap text-sm font-medium"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            Chat with me
+            <motion.div 
+              className="absolute w-2 h-2 bg-white dark:bg-cool-900 right-0 top-1/2 -translate-y-1/2 translate-x-1 rotate-45"
+            />
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Chat window */}
@@ -189,23 +348,82 @@ export default function Chatbot() {
             exit="exit"
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
-            <Card className="border-cool-200 dark:border-cool-800 shadow-xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-cool-500 to-indigo-500 text-white p-4 flex flex-row items-center gap-3">
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}>
-                  <Avatar className="h-8 w-8 border-2 border-white">
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Bot" />
-                    <AvatarFallback className="bg-indigo-700">
-                      <Bot className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
-                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                  <h3 className="font-medium">{t("chatbot.title")}</h3>
-                  <p className="text-xs text-indigo-100">{t("chatbot.subtitle")}</p>
+            <Card className="border-cool-200 dark:border-cool-800 shadow-xl overflow-hidden backdrop-blur-sm border border-opacity-40 dark:border-opacity-40 bg-white/90 dark:bg-cool-950/90">
+              <CardHeader className="p-4 relative overflow-hidden">
+                {/* Background circuit pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <motion.div 
+                    className="absolute inset-0"
+                    style={{ 
+                      backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,20 L90,20 M20,10 L20,90 M40,10 L40,30 M40,50 L40,90 M60,10 L60,50 M60,70 L60,90 M80,10 L80,90 M10,40 L30,40 M50,40 L90,40 M10,60 L50,60 M70,60 L90,60 M10,80 L90,80' stroke='%236366F1' stroke-width='1' fill='none' /%3E%3C/svg%3E\")",
+                      backgroundSize: "40px 40px"
+                    }}
+                    animate={{ 
+                      backgroundPosition: ["0px 0px", "40px 40px"],
+                    }}
+                    transition={{ 
+                      duration: 20, 
+                      ease: "linear", 
+                      repeat: Infinity 
+                    }}
+                  />
+                </div>
+                <motion.div 
+                  className="flex flex-row items-center gap-3 relative z-10"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <motion.div 
+                    className="absolute -top-2 -left-2"
+                    initial={{ scale: 0 }} 
+                    animate={{ scale: 1 }} 
+                    transition={{ 
+                      delay: 0.2, 
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20 
+                    }}
+                  >
+                    <div className="relative">
+                      <Avatar className="h-14 w-14 border-2 border-white dark:border-cool-950 bg-gradient-to-br from-indigo-500 to-violet-600 ring-2 ring-indigo-500/20 shadow-lg">
+                        <AvatarFallback>
+                          <motion.div
+                            animate={{ 
+                              rotateZ: [0, 10, -10, 0],
+                            }}
+                            transition={{ 
+                              duration: 5, 
+                              repeat: Infinity,
+                              repeatType: "reverse"
+                            }}
+                          >
+                            <Sparkles className="h-6 w-6 text-white" />
+                          </motion.div>
+                        </AvatarFallback>
+                      </Avatar>
+                      <motion.div
+                        className="absolute -right-1 -bottom-1 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full p-1 border-2 border-white dark:border-cool-950"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <Zap className="h-3 w-3 text-white" />
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    className="ml-14"
+                    initial={{ opacity: 0, x: -10 }} 
+                    animate={{ opacity: 1, x: 0 }} 
+                    transition={{ delay: 0.3 }}
+                  >
+                    <h3 className="font-medium text-cool-700 dark:text-cool-300">{t("chatbot.title")}</h3>
+                    <p className="text-xs text-cool-500 dark:text-cool-400">{t("chatbot.subtitle")}</p>
+                  </motion.div>
                 </motion.div>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-80 overflow-y-auto p-4 bg-cool-50/50 dark:bg-cool-900/20">
+                <div className="h-80 overflow-y-auto p-4 bg-cool-50/80 dark:bg-cool-900/50 backdrop-filter backdrop-blur-sm">
                   <AnimatePresence initial={false}>
                     {messages.map((message) => (
                       <motion.div
@@ -217,11 +435,21 @@ export default function Chatbot() {
                         exit="exit"
                         transition={{ type: "spring", damping: 20 }}
                       >
+                        {message.sender === "bot" && (
+                          <motion.div 
+                            className="h-6 w-6 mt-2 mr-2 flex-shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center border border-white/50 dark:border-cool-950/50 shadow-sm"
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.1 }}
+                          >
+                            <Sparkles className="h-3 w-3 text-white" />
+                          </motion.div>
+                        )}
                         <motion.div
-                          className={`max-w-[80%] rounded-lg p-3 ${
+                          className={`max-w-[80%] rounded-lg p-3 backdrop-blur-sm ${
                             message.sender === "user"
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white dark:bg-cool-800 text-cool-700 dark:text-cool-300"
+                              ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white"
+                              : "bg-white/90 dark:bg-cool-800/90 text-cool-700 dark:text-cool-300 border border-cool-200/50 dark:border-cool-700/50"
                           }`}
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
@@ -232,6 +460,16 @@ export default function Chatbot() {
                             {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </p>
                         </motion.div>
+                        {message.sender === "user" && (
+                          <motion.div 
+                            className="h-6 w-6 mt-2 ml-2 flex-shrink-0 rounded-full bg-gradient-to-br from-cool-600 to-cool-400 flex items-center justify-center border border-white/50 dark:border-cool-950/50 shadow-sm"
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.1 }}
+                          >
+                            <span className="text-xs font-bold text-white">You</span>
+                          </motion.div>
+                        )}
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -242,20 +480,25 @@ export default function Chatbot() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                     >
-                      <div className="max-w-[80%] rounded-lg p-3 bg-white dark:bg-cool-800 text-cool-700 dark:text-cool-300">
+                      <motion.div 
+                        className="h-6 w-6 mt-2 mr-2 flex-shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center border border-white/50 dark:border-cool-950/50 shadow-sm"
+                      >
+                        <Sparkles className="h-3 w-3 text-white" />
+                      </motion.div>
+                      <div className="max-w-[80%] rounded-lg p-3 bg-white/90 dark:bg-cool-800/90 border border-cool-200/50 dark:border-cool-700/50 text-cool-700 dark:text-cool-300">
                         <div className="flex items-center gap-1">
                           <motion.div
-                            className="w-2 h-2 rounded-full bg-cool-400"
+                            className="w-2 h-2 rounded-full bg-indigo-500"
                             animate={{ y: [0, -5, 0] }}
                             transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY }}
                           />
                           <motion.div
-                            className="w-2 h-2 rounded-full bg-cool-400"
+                            className="w-2 h-2 rounded-full bg-indigo-500"
                             animate={{ y: [0, -5, 0] }}
                             transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: 0.2 }}
                           />
                           <motion.div
-                            className="w-2 h-2 rounded-full bg-cool-400"
+                            className="w-2 h-2 rounded-full bg-indigo-500"
                             animate={{ y: [0, -5, 0] }}
                             transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: 0.4 }}
                           />
@@ -267,7 +510,7 @@ export default function Chatbot() {
                   <div ref={messagesEndRef} />
                 </div>
               </CardContent>
-              <CardFooter className="p-3 border-t border-cool-200 dark:border-cool-800 bg-white dark:bg-cool-950">
+              <CardFooter className="p-3 border-t border-cool-200/50 dark:border-cool-700/50 bg-white/90 dark:bg-cool-950/90">
                 <form onSubmit={handleSubmit} className="flex w-full gap-2">
                   <Input
                     ref={inputRef}
@@ -275,14 +518,14 @@ export default function Chatbot() {
                     placeholder={t("chatbot.placeholder")}
                     value={inputValue}
                     onChange={handleInputChange}
-                    className="flex-1 bg-cool-50 dark:bg-cool-900/50 border-cool-200 dark:border-cool-800"
+                    className="flex-1 bg-cool-50/50 dark:bg-cool-900/30 border-cool-200/50 dark:border-cool-700/50 focus-visible:ring-indigo-500"
                   />
-                  <motion.div whilehover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button
                       type="submit"
                       size="icon"
                       disabled={isTyping || inputValue.trim() === ""}
-                      className="bg-indigo-500 hover:bg-indigo-600 text-white"
+                      className="bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white"
                     >
                       {isTyping ? (
                         <motion.div
@@ -292,7 +535,12 @@ export default function Chatbot() {
                           <Loader2 className="h-4 w-4" />
                         </motion.div>
                       ) : (
-                        <Send className="h-4 w-4" />
+                        <motion.div
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.8 }}
+                        >
+                          <Send className="h-4 w-4" />
+                        </motion.div>
                       )}
                     </Button>
                   </motion.div>
@@ -305,4 +553,3 @@ export default function Chatbot() {
     </>
   )
 }
-

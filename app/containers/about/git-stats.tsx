@@ -61,8 +61,20 @@ export default function GitStats() {
 
   // Get month labels for the contribution graph
   const getMonthLabels = () => {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    return months
+    return [
+      t("gitStats.months.jan"),
+      t("gitStats.months.feb"),
+      t("gitStats.months.mar"),
+      t("gitStats.months.apr"),
+      t("gitStats.months.may"),
+      t("gitStats.months.jun"),
+      t("gitStats.months.jul"),
+      t("gitStats.months.aug"),
+      t("gitStats.months.sep"),
+      t("gitStats.months.oct"),
+      t("gitStats.months.nov"),
+      t("gitStats.months.dec")
+    ]
   }
 
   const handlePrevYear = async () => {
@@ -104,7 +116,7 @@ export default function GitStats() {
           <div className="flex flex-col items-center justify-center p-4 bg-cool-50 dark:bg-cool-900/20 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <GitCommit className="h-5 w-5 text-indigo-500" />
-              <span className="text-lg font-medium text-cool-700 dark:text-cool-300">Total Commits</span>
+              <span className="text-lg font-medium text-cool-700 dark:text-cool-300">{t("gitStats.totalCommits")}</span>
             </div>
             <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
               {stats.totalCommits.toLocaleString()}
@@ -113,7 +125,7 @@ export default function GitStats() {
           <div className="flex flex-col items-center justify-center p-4 bg-cool-50 dark:bg-cool-900/20 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <GitPullRequest className="h-5 w-5 text-teal-500" />
-              <span className="text-lg font-medium text-cool-700 dark:text-cool-300">Pull Requests</span>
+              <span className="text-lg font-medium text-cool-700 dark:text-cool-300">{t("gitStats.pullRequests")}</span>
             </div>
             <span className="text-3xl font-bold text-teal-600 dark:text-teal-400">
               {stats.totalPullRequests.toLocaleString()}
@@ -127,25 +139,25 @@ export default function GitStats() {
               value="contributions"
               className="max-sm:hidden data-[state=active]:bg-gradient-to-r data-[state=active]:from-cool-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white"
             >
-              Contribution Graph
+              {t("gitStats.contributionGraph")}
             </TabsTrigger>
             <TabsTrigger
               value="yearly"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cool-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white"
             >
-              Yearly Commits
+              {t("gitStats.yearlyCommits")}
             </TabsTrigger>
             <TabsTrigger
               value="languages"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cool-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white"
             >
-              Top Languages
+              {t("gitStats.topLanguages")}
             </TabsTrigger>
           </TabsList>
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="w-12 h-12 rounded-full border-4 border-cool-200 border-t-cool-600 animate-spin"></div>
-              <p className="mt-4 text-muted-foreground">Loading Git stats...</p>
+              <p className="mt-4 text-muted-foreground">{t("gitStats.loading")}</p>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -155,7 +167,7 @@ export default function GitStats() {
                 className="mt-4"
                 onClick={() => window.location.reload()}
               >
-                Retry
+                {t("common.retry")}
               </Button>
             </div>
           ) : (
@@ -164,16 +176,16 @@ export default function GitStats() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="text-sm font-medium text-cool-700 dark:text-cool-300">
-                      {stats.contributionData[selectedYear]?.total.toLocaleString()} contributions in {selectedYear}
+                      {stats.contributionData[selectedYear]?.total.toLocaleString()} {t("gitStats.contributionsIn")} {selectedYear}
                     </div>
                     <div className="flex items-center gap-1 text-xs">
-                      <span className="text-muted-foreground">Less</span>
+                      <span className="text-muted-foreground">{t("gitStats.less")}</span>
                       <div className="w-3 h-3 rounded-sm bg-cool-100 dark:bg-cool-900"></div>
                       <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900"></div>
                       <div className="w-3 h-3 rounded-sm bg-green-300 dark:bg-green-700"></div>
                       <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-500"></div>
                       <div className="w-3 h-3 rounded-sm bg-green-500 dark:bg-green-300"></div>
-                      <span className="text-muted-foreground">More</span>
+                      <span className="text-muted-foreground">{t("gitStats.more")}</span>
                     </div>
                   </div>
 
@@ -186,7 +198,7 @@ export default function GitStats() {
                       disabled={selectedYear === availableYears[0]}
                     >
                       <ChevronLeft className="h-4 w-4 mr-1" />
-                      Prev
+                      {t("gitStats.prev")}
                     </Button>
 
                     <motion.div
@@ -205,7 +217,7 @@ export default function GitStats() {
                       onClick={() => handleNextYear()}
                       disabled={selectedYear === availableYears[availableYears.length - 1]}
                     >
-                      Next
+                      {t("gitStats.next")}
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
@@ -278,7 +290,7 @@ export default function GitStats() {
                   <div className="flex flex-col gap-4">
                     {/* Legend - moved to top right */}
                     <div className="flex items-center justify-end gap-2 text-xs">
-                      <span className="text-muted-foreground">Less</span>
+                      <span className="text-muted-foreground">{t("gitStats.less")}</span>
                       <div className="flex gap-1">
                         <div className="w-3 h-3 rounded-md bg-cool-100 dark:bg-cool-900"></div>
                         <div className="w-3 h-3 rounded-md bg-indigo-200 dark:bg-indigo-900"></div>
@@ -286,7 +298,7 @@ export default function GitStats() {
                         <div className="w-3 h-3 rounded-md bg-indigo-400 dark:bg-indigo-500"></div>
                         <div className="w-3 h-3 rounded-md bg-indigo-500 dark:bg-indigo-300"></div>
                       </div>
-                      <span className="text-muted-foreground">More</span>
+                      <span className="text-muted-foreground">{t("gitStats.more")}</span>
                     </div>
 
                     {/* Year selector - centered */}
@@ -299,7 +311,7 @@ export default function GitStats() {
                         className="h-8 px-3 text-xs"
                       >
                         <ChevronLeft className="h-4 w-4 mr-1" />
-                        Prev
+                        {t("gitStats.prev")}
                       </Button>
 
                       <motion.div
@@ -319,7 +331,7 @@ export default function GitStats() {
                         disabled={selectedYear === availableYears[availableYears.length - 1]}
                         className="h-8 px-3 text-xs"
                       >
-                        Next
+                        {t("gitStats.next")}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>

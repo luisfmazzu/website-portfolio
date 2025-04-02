@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Mail, MapPin, Phone, Send, Copy, Check } from "lucide-react"
+import { Mail, MapPin, Phone, Send, Copy, Check, AlertCircle } from "lucide-react"
 import { Button } from "@/app/components/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/components/form"
@@ -14,15 +14,16 @@ import { toast } from "@/app/components/use-toast"
 import SectionObserver from "@/app/components/section-observer"
 import SectionDivider from "@/app/components/section-divider"
 import { motion, useInView } from "framer-motion"
-import { EmailTemplate } from "@/app/components/email-template"
-import { Resend } from 'resend';
 import { Alert, AlertDescription } from "@/app/components/alert"
-import { AlertCircle } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useTranslation } from "@/hooks/use-translation"
 
 // Dynamically import ReCAPTCHA with no SSR to avoid hydration issues
 const ReCAPTCHA : any = dynamic(() => import("react-google-recaptcha"), { ssr: false })
+
+// Use reCAPTCHA site key from public environment variables
+// Note: Client components need NEXT_PUBLIC_ prefix to access env vars
+const recaptchaSiteKey = process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY;
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -37,6 +38,7 @@ const formSchema = z.object({
 export default function Contact() {
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false)
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 })
   const [phoneNumberCopied, setPhoneNumberCopied] = useState(false)
@@ -44,8 +46,6 @@ export default function Contact() {
   const [recaptchaVerified, setRecaptchaVerified] = useState(false)
   const [recaptchaError, setRecaptchaError] = useState(false)
   const recaptchaRef = useRef<any>(null)
-
-  const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,55 +58,75 @@ export default function Contact() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true)
-
-    // Create mailto link with form values
-    const subject = values.subject
-    const body = `Name: ${values.name}\nEmail: ${values.email}\n\nMessage:\n${values.message}`
-    let emailSent = true;
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    let emailSent = false;
+    let errorMessage = '';
 
     try {
-      const { data, error } = await resend.emails.send({
-        from: 'Acme <onboarding@resend.dev>',
-        to: ['luisfmazzu@gmail.com'],
-        subject: subject,
-        react: EmailTemplate({ message: body }) as React.ReactElement,
-      });
-  
-      if (error) {
-        emailSent = false;
-      }
-  
-      console.log(Response.json(data));
-    } catch (error) {
-      emailSent = false;
-    }
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-    // Reset form after a short delay
-    setTimeout(() => {
-      setIsSubmitting(false)
-      // Reset reCAPTCHA
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset()
-        setRecaptchaVerified(false)
+      // Call our server-side API route instead of directly calling Resend
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        emailSent = true;
+      } else {
+        errorMessage = result.error || 'Failed to send email';
+      }
+    } catch (error: any) {
+      // Check if it's an abort error (timeout)
+      if (error.name === 'AbortError') {
+        errorMessage = 'Request timed out. Please try again.';
+      } else {
+        errorMessage = error.message || 'An unknown error occurred';
+      }
+      console.error('Error sending email:', error);
+    } finally {
+      // Reset form state immediately rather than in a timeout
+      setIsSubmitting(false);
+      
+      // Only update success state if email was actually sent
+      if (emailSent) {
+        setIsSubmitSuccessful(true);
+        form.reset();
       }
       
-      if(emailSent){
-        form.reset()
-        toast({
-          title: "Email sent!",
-          description: "Your message has been sent. I'll answer it as soon as possible.",
-        })
-      } 
-      else {
-        toast({
-          title: "Error sending the email.",
-          description: "An error occured when sending the email via the Resend library. Feel free to send the email to luisfmazzu@gmail.com",
-        })
+      // Reset reCAPTCHA
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
       }
-    }, 1000)
-  }
+      setRecaptchaVerified(false);
+
+      // Show appropriate toast notification
+      if (emailSent) {
+        toast({
+          title: t("contact.toast.success.title") || "Message sent successfully!",
+          description: t("contact.toast.success.description") || "Thank you for your message. I'll get back to you soon.",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: t("contact.toast.error.title") || "Failed to send message",
+          description: errorMessage || t("contact.toast.error.description") || "Please try again or contact me directly.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   const handleRecaptchaChange = (token: string | null) => {
     if (token) {
@@ -336,180 +356,206 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  {isSubmitSuccessful ? (
                     <motion.div
-                      className="grid gap-4 sm:grid-cols-2"
-                      variants={containerVariants}
-                      initial="hidden"
-                      animate={isInView ? "visible" : "hidden"}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="py-8 text-center"
                     >
-                      <motion.div variants={itemVariants}>
-                        <FormField
-                          control={form.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.name")}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={t("contact.form.name")}
-                                  {...field}
-                                  className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </motion.div>
-                      <motion.div variants={itemVariants}>
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.email")}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={t("contact.form.email")}
-                                  {...field}
-                                  className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </motion.div>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="subject"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.subject")}</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t("contact.form.subject")}
-                                {...field}
-                                className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="message"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.message")}</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t("contact.form.message")}
-                                rows={5}
-                                {...field}
-                                className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                    {/* reCAPTCHA */}
-                    <motion.div variants={itemVariants} className="flex justify-center">
-                      <FormField
-                        control={form.control}
-                        name="recaptcha"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <div className="recaptcha-container">
-                                <ReCAPTCHA
-                                  ref={recaptchaRef}
-                                  sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY}
-                                  onChange={(token: string | null) => {
-                                    handleRecaptchaChange(token);
-                                    field.onChange(token || "");
-                                  }}
-                                  onError={handleRecaptchaError}
-                                  theme="light"
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {recaptchaError && (
-                        <Alert variant="destructive" className="mt-2">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>
-                            There was an error loading the reCAPTCHA. Please refresh the page and try again.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </motion.div>
-
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <motion.div
-                        variants={itemVariants}
-                        whileHover={{ scale: recaptchaVerified ? 1.02 : 1 }}
-                        whileTap={{ scale: recaptchaVerified ? 0.98 : 1 }}
-                        className="w-full"
-                      >
-                        <Button
-                          type="submit"
-                          className={`w-full bg-gradient-to-r from-cool-600 to-indigo-600 hover:from-cool-700 hover:to-indigo-700 transition-all duration-300 ${!recaptchaVerified ? "opacity-50 cursor-not-allowed" : ""}`}
-                          disabled={isSubmitting || !recaptchaVerified}
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                                className="mr-2"
-                              >
-                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                    fill="none"
-                                  />
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  />
-                                </svg>
-                              </motion.div>
-                              {t("contact.form.sending")}
-                            </>
-                          ) : (
-                            <>
-                              <Send className="mr-2 h-4 w-4" /> {t("contact.form.submit")}
-                            </>
-                          )}
-                        </Button>
-                      </motion.div>
-                    </div>
-
-                    {!recaptchaVerified && (
-                      <p className="text-sm text-center text-muted-foreground">
-                        Please complete the reCAPTCHA verification to enable the send buttons.
+                      <div className="mb-6 flex justify-center">
+                        <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/30">
+                          <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
+                        </div>
+                      </div>
+                      <h3 className="mb-2 text-xl font-medium text-cool-700 dark:text-cool-300">
+                        {t("contact.form.success.title") || "Message Sent Successfully!"}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {t("contact.form.success.description") || "Thank you for reaching out. I'll get back to you as soon as possible."}
                       </p>
-                    )}
-                  </form>
+                      <Button
+                        className="mt-6 bg-gradient-to-r from-cool-600 to-indigo-600 hover:from-cool-700 hover:to-indigo-700"
+                        onClick={() => setIsSubmitSuccessful(false)}
+                      >
+                        {t("contact.form.success.newMessage") || "Send Another Message"}
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <motion.div
+                        className="grid gap-4 sm:grid-cols-2"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                      >
+                        <motion.div variants={itemVariants}>
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.name")}</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder={t("contact.form.name")}
+                                    {...field}
+                                    className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </motion.div>
+                        <motion.div variants={itemVariants}>
+                          <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.email")}</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder={t("contact.form.email")}
+                                    {...field}
+                                    className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </motion.div>
+                      </motion.div>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="subject"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.subject")}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder={t("contact.form.subject")}
+                                  {...field}
+                                  className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="message"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-cool-700 dark:text-cool-300">{t("contact.form.message")}</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder={t("contact.form.message")}
+                                  rows={5}
+                                  {...field}
+                                  className="bg-white/50 dark:bg-cool-900/20 border-cool-200 dark:border-cool-800"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+                      {/* reCAPTCHA */}
+                      <motion.div variants={itemVariants} className="flex justify-center">
+                        <FormField
+                          control={form.control}
+                          name="recaptcha"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="recaptcha-container">
+                                  <ReCAPTCHA
+                                    ref={recaptchaRef}
+                                    sitekey={recaptchaSiteKey}
+                                    onChange={(token: string | null) => {
+                                      handleRecaptchaChange(token);
+                                      field.onChange(token || "");
+                                    }}
+                                    onError={handleRecaptchaError}
+                                    theme="light"
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {recaptchaError && (
+                          <Alert variant="destructive" className="mt-2">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>
+                              There was an error loading the reCAPTCHA. Please refresh the page and try again.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </motion.div>
+
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <motion.div
+                          variants={itemVariants}
+                          whileHover={{ scale: recaptchaVerified ? 1.02 : 1 }}
+                          whileTap={{ scale: recaptchaVerified ? 0.98 : 1 }}
+                          className="w-full"
+                        >
+                          <Button
+                            type="submit"
+                            className={`w-full bg-gradient-to-r from-cool-600 to-indigo-600 hover:from-cool-700 hover:to-indigo-700 transition-all duration-300 ${!recaptchaVerified ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={isSubmitting || !recaptchaVerified}
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                                  className="mr-2"
+                                >
+                                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                      fill="none"
+                                    />
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    />
+                                  </svg>
+                                </motion.div>
+                                {t("contact.form.sending")}
+                              </>
+                            ) : (
+                              <>
+                                <Send className="mr-2 h-4 w-4" /> {t("contact.form.submit")}
+                              </>
+                            )}
+                          </Button>
+                        </motion.div>
+                      </div>
+
+                      {!recaptchaVerified && (
+                        <p className="text-sm text-center text-muted-foreground">
+                          Please complete the reCAPTCHA verification to enable the send buttons.
+                        </p>
+                      )}
+                    </form>
+                  )}
                 </Form>
               </CardContent>
             </Card>

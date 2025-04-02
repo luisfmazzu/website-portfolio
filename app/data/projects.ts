@@ -97,7 +97,7 @@ export function getProjects() {
         t("projects.project3.detail7"),
         t("projects.project3.detail8")
       ],
-      githubUrl: "",
+      githubUrl: "https://github.com/luisfmazzu/website-portfolio",
       websiteUrl: "https://luisfmazzu.com",
       files: [],
       role: t("projects.project3.role")
@@ -468,7 +468,7 @@ export const projects: Project[] = [
       "Implemented dark mode with theme persistence",
       "Implemented translation system"
     ],
-    githubUrl: "",
+    githubUrl: "https://github.com/luisfmazzu/website-portfolio",
     websiteUrl: "https://luisfmazzu.com",
     files: [],
     role: "Full-Stack Engineer"
