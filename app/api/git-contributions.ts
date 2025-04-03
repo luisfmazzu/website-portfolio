@@ -76,32 +76,113 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
       contributionData: skeleton, // Use the skeleton as a starting point
     };
 
-    // Next: fetch your GitHub and GitLab data, plus the private contributions
+    // Fetch GitHub and GitLab data with error handling
+    try {
+      const [gitHubContributions, gitLabContributions] = await Promise.all([
+        fetchGitHubContributions(availableYears).catch(error => {
+          console.error("Error fetching GitHub contributions:", error);
+          // Return empty data structure on error
+          return {
+            commits: availableYears.map(year => ({ 
+              year, 
+              contributionCalendar: { 
+                totalContributions: 0, 
+                weeks: [], 
+                colors: [] 
+              } 
+            })),
+            pullRequests: availableYears.map(year => ({ year, totalPullRequests: 0 }))
+          };
+        }),
+        fetchGitLabContributions().catch(error => {
+          console.error("Error fetching GitLab contributions:", error);
+          return "Error fetching GitLab contributions";
+        })
+      ]);
 
-    const [gitHubContributions, gitLabContributions] = await Promise.all([
-      fetchGitHubContributions(availableYears), // Use the new server-side API route function
-      fetchGitLabContributions() // Use the new server-side API route function
-    ]);
+      // Process GitHub data if available
+      if (typeof gitHubContributions !== "string" && !('error' in gitHubContributions)) {
+        // Process commits - Safely check for errors in each commit object
+        gitHubContributions.commits.forEach(({ year, contributionCalendar }) => {
+          // Skip processing if this commit has an error
+          if ('error' in contributionCalendar) {
+            console.warn(`Skipping GitHub commits for ${year} due to error: ${contributionCalendar.error}`);
+            return;
+          }
 
-    // Process GitHub data
-    if (typeof gitHubContributions !== "string") {
-      // Process commits
-      gitHubContributions.commits.forEach(({ year, contributionCalendar }) => {
-        gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + contributionCalendar.totalContributions;
-        gitStatsData.totalCommits += contributionCalendar.totalContributions;
+          gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + contributionCalendar.totalContributions;
+          gitStatsData.totalCommits += contributionCalendar.totalContributions;
 
-        // Process contribution calendar data - add to existing days in the skeleton
-        contributionCalendar.weeks.forEach(week => {
+          // Process contribution calendar data
+          contributionCalendar.weeks.forEach(week => {
+            week.contributionDays.forEach(day => {
+              const dateStr = day.date;
+              const yearStr = dateStr.substring(0, 4);
+              if (gitStatsData.contributionData[yearStr]) {
+                // Find the matching day in our skeleton and update it
+                gitStatsData.contributionData[yearStr].weeks.forEach(skeletonWeek => {
+                  skeletonWeek.contributionDays.forEach(skeletonDay => {
+                    if (skeletonDay.date === dateStr) {
+                      skeletonDay.contributionCount += day.contributionCount;
+                      skeletonDay.intensity = Math.max(skeletonDay.intensity, getIntensityFromColor(day.color));
+                    }
+                  });
+                });
+              }
+            });
+          });
+        });
+
+        // Process pull requests - Safely check for errors in each PR object
+        gitHubContributions.pullRequests.forEach((prData) => {
+          if ('error' in prData) {
+            console.warn(`Skipping GitHub PRs for ${prData.year} due to error: ${prData.error}`);
+            return;
+          }
+          gitStatsData.totalPullRequests += prData.totalPullRequests;
+        });
+      } else {
+        console.warn("GitHub contributions data is not available or has errors. Using private contributions only.");
+      }
+
+      // Process GitLab data
+      if (typeof gitLabContributions !== 'string') {
+        // Process commits
+        gitLabContributions.commits.forEach(({ year, totalCommits }) => {
+          gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + totalCommits;
+          gitStatsData.totalCommits += totalCommits;
+        });
+
+        // Process merge requests
+        gitLabContributions.mergeRequests.forEach(({ year, totalMergeRequests }) => {
+          gitStatsData.totalPullRequests += totalMergeRequests;
+        });
+      } else {
+        console.warn("GitLab contributions data is not available. Using GitHub and private contributions only.");
+      }
+    } catch (error) {
+      console.error("Error processing GitHub/GitLab data:", error);
+      // Continue with private contributions only
+    }
+
+    // Process private contributions data - This should always work as it's local data
+    try {
+      Object.entries(privateContributions.contributionData).forEach(([year, data]) => {
+        // Add to yearly commits
+        gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + data.total;
+        gitStatsData.totalCommits += data.total;
+
+        // Add to specific days in the skeleton
+        data.weeks.forEach(week => {
           week.contributionDays.forEach(day => {
             const dateStr = day.date;
-            const yearStr = dateStr.substring(0, 4);
-            if (gitStatsData.contributionData[yearStr]) {
+            if (gitStatsData.contributionData[year]) {
               // Find the matching day in our skeleton and update it
-              gitStatsData.contributionData[yearStr].weeks.forEach(skeletonWeek => {
+              gitStatsData.contributionData[year].weeks.forEach(skeletonWeek => {
                 skeletonWeek.contributionDays.forEach(skeletonDay => {
                   if (skeletonDay.date === dateStr) {
                     skeletonDay.contributionCount += day.contributionCount;
-                    skeletonDay.intensity = Math.max(skeletonDay.intensity, getIntensityFromColor(day.color));
+                    skeletonDay.intensity = Math.max(skeletonDay.intensity, day.intensity);
                   }
                 });
               });
@@ -110,55 +191,13 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
         });
       });
 
-      // Process pull requests
-      gitHubContributions.pullRequests.forEach(({ year, totalPullRequests }) => {
-        gitStatsData.totalPullRequests += totalPullRequests;
-      });
-    }
-
-    // Process GitLab data
-    if (typeof gitLabContributions !== 'string') {
-      // Process commits
-      gitLabContributions.commits.forEach(({ year, totalCommits }) => {
-        gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + totalCommits;
-        gitStatsData.totalCommits += totalCommits;
-      });
-
-      // Process merge requests
-      gitLabContributions.mergeRequests.forEach(({ year, totalMergeRequests }) => {
+      // Process private merge requests
+      privateContributions.mergeRequests.forEach(({ year, totalMergeRequests }) => {
         gitStatsData.totalPullRequests += totalMergeRequests;
       });
+    } catch (error) {
+      console.error("Error processing private contributions:", error);
     }
-
-    // Process private contributions data
-    Object.entries(privateContributions.contributionData).forEach(([year, data]) => {
-      // Add to yearly commits
-      gitStatsData.yearlyCommits[year] = (gitStatsData.yearlyCommits[year] || 0) + data.total;
-      gitStatsData.totalCommits += data.total;
-
-      // Add to specific days in the skeleton
-      data.weeks.forEach(week => {
-        week.contributionDays.forEach(day => {
-          const dateStr = day.date;
-          if (gitStatsData.contributionData[year]) {
-            // Find the matching day in our skeleton and update it
-            gitStatsData.contributionData[year].weeks.forEach(skeletonWeek => {
-              skeletonWeek.contributionDays.forEach(skeletonDay => {
-                if (skeletonDay.date === dateStr) {
-                  skeletonDay.contributionCount += day.contributionCount;
-                  skeletonDay.intensity = Math.max(skeletonDay.intensity, day.intensity);
-                }
-              });
-            });
-          }
-        });
-      });
-    });
-
-    // Process private merge requests
-    privateContributions.mergeRequests.forEach(({ year, totalMergeRequests }) => {
-      gitStatsData.totalPullRequests += totalMergeRequests;
-    });
 
     // Recalculate totals after merging all data sources
     Object.entries(gitStatsData.contributionData).forEach(([year, yearData]) => {
@@ -183,7 +222,23 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
     return gitStatsData;
   } catch (error) {
     console.error("Error in getGitContributions:", error);
-    throw error;
+    
+    // Return minimal data structure to prevent UI crashes
+    const skeleton = createSkeletonData();
+    return {
+      totalCommits: 0,
+      yearlyCommits: {},
+      monthlyCommits: {},
+      topLanguages: [
+        { name: "Python", percentage: 37, color: "#f7df1e" },
+        { name: "TypeScript", percentage: 29, color: "#3178c6" },
+        { name: "Go", percentage: 17, color: "#e34c26" },
+        { name: "C#", percentage: 8, color: "#3572A5" },
+        { name: "Other", percentage: 9, color: "#8e8e8e" },
+      ],
+      totalPullRequests: 0,
+      contributionData: skeleton,
+    };
   }
 }
 

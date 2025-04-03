@@ -1,17 +1,13 @@
 const GITHUB_GRAPHQL_API = "https://api.github.com/graphql";
 
-// Function to get GitHub credentials from environment variables
+// Function to get GitHub credentials from environment variables with better error handling
 function getCredentials() {
   // Access environment variables inside a function to ensure they are retrieved at runtime
   const token = process.env.GITHUB_TOKEN;
   const username = process.env.GITHUB_USERNAME;
   
-  // Log for debugging (will only show in server logs)
-  console.log("GitHub API credentials check:", {
-    tokenExists: !!token,
-    usernameExists: !!username,
-    nodeEnv: process.env.NODE_ENV,
-  });
+  // Log status of credentials for debugging (not exposing actual values)
+  console.log(`GitHub credentials check: Token ${token ? 'present' : 'missing'}, Username ${username ? 'present' : 'missing'}`);
   
   return { token, username };
 }
@@ -62,29 +58,79 @@ export interface GitHubContributions {
 }
 
 export async function getGitHubContributions(availableYears : Array<string>): Promise<GitHubContributions> {
-  const pullRequests = await getGitHubPullRequest(availableYears)
-  
-  const commitPromises = availableYears.map(async (year) => {
-    const contributionCalendar = await getGitHubCommits(parseInt(year))
-    return {
-      year,
-      contributionCalendar
+  try {
+    const { token, username } = getCredentials();
+    
+    // Check for credentials immediately to avoid unnecessary API calls
+    if (!username || !token) {
+      console.error("Missing GitHub credentials. Please check environment variables.");
+      return {
+        pullRequests: availableYears.map(year => ({ 
+          year, 
+          totalPullRequests: 0,
+          error: "Missing GitHub credentials" 
+        })),
+        commits: availableYears.map(year => ({
+          year,
+          contributionCalendar: {
+            colors: [],
+            totalContributions: 0,
+            weeks: [],
+            error: "Missing GitHub credentials"
+          }
+        }))
+      };
     }
-  })
-  
-  const commits = await Promise.all(commitPromises);
+    
+    const pullRequests = await getGitHubPullRequest(availableYears);
+    
+    const commitPromises = availableYears.map(async (year) => {
+      try {
+        const contributionCalendar = await getGitHubCommits(parseInt(year));
+        return {
+          year,
+          contributionCalendar
+        };
+      } catch (error) {
+        console.error(`Error fetching GitHub commits for ${year}:`, error);
+        return {
+          year,
+          contributionCalendar: {
+            colors: [],
+            totalContributions: 0,
+            weeks: [],
+            error: `Failed to fetch commits for ${year}: ${error}`
+          }
+        };
+      }
+    });
+    
+    const commits = await Promise.all(commitPromises);
 
-  return {
-    pullRequests,
-    commits
-  };
+    return {
+      pullRequests,
+      commits
+    };
+  } catch (error) {
+    console.error("Error in getGitHubContributions:", error);
+    return {
+      pullRequests: [],
+      commits: [],
+      error: `GitHub API error: ${error}`
+    };
+  }
 }
 
 async function getGitHubCommits(yearInt : number) {
   const { token, username } = getCredentials();
 
   if (!username || !token) {
-    return { error: "Missing GitHub credentials" };
+    return { 
+      colors: [],
+      totalContributions: 0,
+      weeks: [],
+      error: "Missing GitHub credentials" 
+    };
   }
 
   const query = {
@@ -109,8 +155,6 @@ async function getGitHubCommits(yearInt : number) {
           }`
   };
 
-  let errorResponse : any = {}
-
   try {
     const response = await fetch(GITHUB_GRAPHQL_API, {
       method: "POST",
@@ -119,19 +163,43 @@ async function getGitHubCommits(yearInt : number) {
         Authorization: `bearer ${token}`,
       },
       body: JSON.stringify(query),
-    })
+      // Add timeout to prevent hanging requests
+      signal: AbortSignal.timeout(10000) // 10 second timeout
+    });
 
     if (!response.ok) {
-      errorResponse['error'] = `GitHub API error: ${response.statusText}`
-      return errorResponse
+      const errorText = await response.text();
+      console.error(`GitHub API error (${response.status}): ${errorText}`);
+      return {
+        colors: [],
+        totalContributions: 0,
+        weeks: [],
+        error: `GitHub API error: ${response.status} ${response.statusText}`
+      };
     }
 
-    const json: GitHubResponse = await response.json()
+    const json: GitHubResponse = await response.json();
+    
+    // Check if the response contains the expected data structure
+    if (!json.data?.user?.contributionsCollection?.contributionCalendar) {
+      console.error("Unexpected GitHub API response structure:", JSON.stringify(json));
+      return {
+        colors: [],
+        totalContributions: 0,
+        weeks: [],
+        error: "Invalid GitHub API response structure"
+      };
+    }
 
     return json.data.user.contributionsCollection.contributionCalendar;
   } catch (error: any) {
-    errorResponse['error'] = error
-    return errorResponse
+    console.error(`GitHub API error fetching commits for ${yearInt}:`, error);
+    return {
+      colors: [],
+      totalContributions: 0,
+      weeks: [],
+      error: error.message || "Unknown error fetching GitHub contributions"
+    };
   }
 }
 
@@ -139,13 +207,16 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
   const { token, username } = getCredentials();
 
   if (!username || !token) {
-    return [{ error: "Missing GitHub credentials" }];
+    return availableYears.map(year => ({ 
+      year, 
+      totalPullRequests: 0,
+      error: "Missing GitHub credentials" 
+    }));
   }
 
   // Fetch pull requests for all years in parallel
   const pullRequestPromises = availableYears.map(async (year : string) => {
-    const yearInt = parseInt(year)
-    let errorResponse : any = {}
+    const yearInt = parseInt(year);
 
     const query = {
       query: `
@@ -161,27 +232,54 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
       `
     };
 
-    const response = await fetch(GITHUB_GRAPHQL_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(query),
-    });
+    try {
+      const response = await fetch(GITHUB_GRAPHQL_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(query),
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
 
-    if (!response.ok) {
-      errorResponse['error'] = `GitHub API error: ${response.statusText}`
-      return errorResponse
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`GitHub API error (${response.status}) for PR in ${year}: ${errorText}`);
+        return {
+          year,
+          totalPullRequests: 0,
+          error: `GitHub API error: ${response.status} ${response.statusText}`
+        };
+      }
+
+      const json: GitHubResponse = await response.json();
+      
+      // Check if the response contains the expected data structure
+      if (!json.data?.user?.contributionsCollection?.pullRequestContributions) {
+        console.error("Unexpected GitHub API response structure for PRs:", JSON.stringify(json));
+        return {
+          year,
+          totalPullRequests: 0,
+          error: "Invalid GitHub API response structure"
+        };
+      }
+      
+      const totalCount = json.data.user.contributionsCollection.pullRequestContributions.totalCount;
+
+      return {
+        year,
+        totalPullRequests: totalCount
+      };
+    } catch (error: any) {
+      console.error(`GitHub API error fetching PRs for ${year}:`, error);
+      return {
+        year,
+        totalPullRequests: 0,
+        error: error.message || "Unknown error fetching GitHub pull requests"
+      };
     }
-
-    const json: GitHubResponse = await response.json();
-    const totalCount = json.data.user.contributionsCollection.pullRequestContributions.totalCount;
-
-    return {
-      year,
-      totalPullRequests: totalCount
-    };
   });
 
   const pullRequests = await Promise.all(pullRequestPromises);

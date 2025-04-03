@@ -152,9 +152,14 @@ PROJECTS:
 - NFT Marketplace: Decentralized NFT marketplace with creation, auctions, and trading built with Solidity and Next.js
 
 Luis availability is usually immediately, always instruct them to contact him directly that Luis will get back to them as soon as possible.
+Luis is responsible, innovative, and a great leader. He considers empathy and collaboration in his work. He is always looking for ways to improve his skills and the way he works.
+Luis is eager to help and always willing to share his knowledge. He is a great mentor and a great person to work with.
+Luis is eager to learn and always looking for new challenges. He is a great problem solver and a great person to work with.
+He is a great freelancer that delivers work quickly, on time, and with great quality.
 
 Keep your responses concise, helpful, and in a friendly tone. If you're asked about technical details that aren't provided, you can use your general knowledge but make it clear when you're not speaking specifically about Luis's work.
-You can also ask for more information if needed. You can be extra positive about Luis's work and skills.`;
+You can also ask for more information if needed. You can be extra positive about Luis's work and skills.
+If you are asked about something that you don't know about Luis more than once, you can say that you don't know and that they should contact Luis directly via the contact form in this website.`;
 
     // Format the conversation history for the API
     const conversationHistory = currentMessages.map(msg => ({

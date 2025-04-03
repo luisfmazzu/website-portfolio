@@ -394,7 +394,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           
           // Common Project Terms
           "projects.companyLabel": "Project by",
-          "projects.roleLabel": "My Role:",
+          "projects.roleLabel": "Role:",
           "projects.detailsLabel": "Project Details:",
           "projects.contributionLabel": "My Contribution:",
           "projects.companySiteLabel": "Company Site",
@@ -435,7 +435,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "chatbot.title": "Luis' Assistant",
           "chatbot.subtitle": "Ask me anything about my work",
           "chatbot.greeting":
-            "👋 Hi there! I'm Luis' assistant. How can I help you today? You can ask about my experience, skills, or freelance work.",
+            "👋 Hi there! I'm Luis' automated assistant powered by OpenAI. How can I help you today?",
           "chatbot.placeholder": "Type your message...",
           "chatbot.typing": "Typing...",
           "chatbot.experience":
@@ -448,7 +448,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
             "You can reach me via email at luisfmazzu@gmail.com or by phone at +55 (41) 99700-3955. I'm also available through the contact form on this website.",
           "chatbot.thanks": "You're welcome! If you have any other questions, feel free to ask. I'm here to help!",
           "chatbot.fallback":
-            "I'm not sure I understand that question. Could you try rephrasing it? You can ask about my experience, skills, or freelance work.",
+            "I'm not sure I understand that question. Could you try rephrasing it? You can ask about my experience, skills, projects or freelance work.",
         },
         pt: {
           "previous": "anterior",
@@ -861,7 +861,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "chatbot.title": "Assistente do Portfólio",
           "chatbot.subtitle": "Pergunte-me sobre meu trabalho",
           "chatbot.greeting":
-            "👋 Olá! Sou o assistente do portfólio. Como posso ajudar você hoje? Você pode perguntar sobre minha experiência, habilidades ou trabalho freelance.",
+            "👋 Olá! Sou o assistente automatizado do Luis, integrado à OpenAI. Como posso ajudar você hoje?",
           "chatbot.placeholder": "Digite sua mensagem...",
           "chatbot.typing": "Digitando...",
           "chatbot.experience":
