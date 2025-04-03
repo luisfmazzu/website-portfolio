@@ -27,7 +27,7 @@ const GHOST_COLORS = [
 ];
 
 // Ghost size in pixels
-const GHOST_SIZE = 20;
+const GHOST_SIZE = 26;
 
 // Maximum number of ghosts
 const MAX_GHOSTS = 3;

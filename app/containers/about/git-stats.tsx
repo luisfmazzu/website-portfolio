@@ -55,7 +55,24 @@ export default function GitStats() {
     };
 
     fetchGitContributions();
-  }, []);
+    
+    // Set default tab based on screen size
+    const handleScreenSize = () => {
+      const isMobile = window.innerWidth < 640; // sm breakpoint
+      if (isMobile) {
+        if (activeTab === "contributions" || activeTab === "yearly") {
+          setActiveTab("languages");
+        }
+      }
+    };
+    
+    handleScreenSize();
+    window.addEventListener('resize', handleScreenSize);
+    
+    return () => {
+      window.removeEventListener('resize', handleScreenSize);
+    };
+  }, [activeTab]);
 
   const maxCommits = Math.max(...Object.values(stats.yearlyCommits), ...Object.values(stats.monthlyCommits))
 
@@ -143,7 +160,7 @@ export default function GitStats() {
             </TabsTrigger>
             <TabsTrigger
               value="yearly"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cool-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white"
+              className="max-sm:hidden data-[state=active]:bg-gradient-to-r data-[state=active]:from-cool-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white"
             >
               {t("gitStats.yearlyCommits")}
             </TabsTrigger>
@@ -154,6 +171,12 @@ export default function GitStats() {
               {t("gitStats.topLanguages")}
             </TabsTrigger>
           </TabsList>
+          
+          {/* Mobile-only message about desktop feature */}
+          <div className="sm:hidden mb-4 px-4 py-3 bg-cool-50 dark:bg-cool-900/20 rounded-md text-sm text-muted-foreground">
+            <p>The contribution graph and yearly commit visualizations are available on desktop devices for a better viewing experience.</p>
+          </div>
+          
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="w-12 h-12 rounded-full border-4 border-cool-200 border-t-cool-600 animate-spin"></div>
@@ -172,7 +195,7 @@ export default function GitStats() {
             </div>
           ) : (
             <>
-              <TabsContent value="contributions" className="mt-0">
+              <TabsContent value="contributions" className="mt-0 max-sm:hidden">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="text-sm font-medium text-cool-700 dark:text-cool-300">
@@ -284,7 +307,7 @@ export default function GitStats() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="yearly" className="mt-0">
+              <TabsContent value="yearly" className="mt-0 max-sm:hidden">
                 <div className="space-y-4">
                   {/* Header with legend and year selector */}
                   <div className="flex flex-col gap-4">

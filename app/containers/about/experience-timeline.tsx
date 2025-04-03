@@ -112,11 +112,10 @@ export default function ExperienceTimeline() {
         {t("experience.title")}
       </motion.h3>
 
-      {/* Modern Timeline */}
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative max-w-6xl mx-auto">
         {/* Timeline line with glow effect */}
         <motion.div
-          className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full"
+          className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full md:block hidden"
           style={{
             height: "100%",
             boxShadow:
@@ -145,15 +144,26 @@ export default function ExperienceTimeline() {
           </motion.div>
         </motion.div>
 
+        {/* Mobile timeline line - simplified version */}
+        <motion.div
+          className="absolute left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full md:hidden block"
+          style={{
+            height: "100%",
+          }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={timelineLineVariants}
+        ></motion.div>
+
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="space-y-24"
+          className="space-y-6"
         >
           {/* Year marker for 2025 */}
           <motion.div variants={yearMarkerVariants} className="relative">
-            <motion.div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
               <motion.div
                 className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
@@ -175,15 +185,25 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            {/* Principal Engineer job (2025-present) */}
-            <div className="mt-8 pt-8 ml-4">
+            {/* Mobile year marker */}
+            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+              <motion.div
+                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-indigo-700 dark:text-indigo-300 font-bold text-sm">2025</span>
+              </motion.div>
+            </motion.div>
+
+            <div className="mt-8 pt-[100px] md:ml-4 pl-8">
               <motion.div
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
               >
-                <div className="md:col-start-2">
+                <div className="md:col-start-2 col-start-1">
                   {jobs
                     .filter((job) => job.timeframe === "2025-present")
                     .map((job) => (
@@ -236,7 +256,7 @@ export default function ExperienceTimeline() {
 
           {/* Year marker for 2023-2024 */}
           <motion.div variants={yearMarkerVariants} className="relative">
-            <motion.div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
               <motion.div
                 className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
@@ -258,14 +278,25 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-8 mr-4">
+            {/* Mobile year marker */}
+            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+              <motion.div
+                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-purple-700 dark:text-purple-300 font-bold text-sm">2024</span>
+              </motion.div>
+            </motion.div>
+
+            <div className="mt-8 pt-[100px] md:mr-4 pr-8">
               <motion.div
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
               >
-                <div className="md:col-start-1">
+                <div className="md:col-start-1 col-start-1">
                   {jobs
                     .filter((job) => job.timeframe === "2023-2024")
                     .map((job) => (
@@ -317,7 +348,7 @@ export default function ExperienceTimeline() {
           </motion.div>
 
           <motion.div variants={yearMarkerVariants} className="relative">
-            <motion.div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
               <motion.div
                 className="w-16 h-16 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
@@ -339,7 +370,18 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-8">
+            {/* Mobile year marker */}
+            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+              <motion.div
+                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-teal-700 dark:text-teal-300 font-bold text-sm">2023</span>
+              </motion.div>
+            </motion.div>
+
+            <div className="mt-8 pt-8 ml-12">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -402,8 +444,8 @@ export default function ExperienceTimeline() {
           </motion.div>
 
           {/* Toggle button for earlier experiences */}
-          <motion.div variants={yearMarkerVariants} className="relative flex justify-center pt-8">
-            <div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+          <motion.div variants={yearMarkerVariants} className="relative flex justify-center pt-12 md:pt-8">
+            <div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
               <motion.div
                 className="w-16 h-16 rounded-full bg-cool-100 dark:bg-cool-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
@@ -425,15 +467,27 @@ export default function ExperienceTimeline() {
               </motion.div>
             </div>
 
+            {/* Mobile year marker */}
+            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+              <motion.div
+                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-cool-100 dark:bg-cool-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-cool-700 dark:text-cool-300 font-bold text-sm">2021-</span>
+              </motion.div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
+              className="md:mt-20 mt-12"
             >
               <Button
                 variant="outline"
                 onClick={toggleEarlierExperiences}
-                className="mt-20 glass-card border-cool-200 dark:border-cool-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300"
+                className="glass-card border-cool-200 dark:border-cool-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300"
               >
                 {showEarlierExperiences ? (
                   <>
@@ -456,10 +510,10 @@ export default function ExperienceTimeline() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-24 overflow-hidden"
+                className="space-y-6 overflow-hidden"
               >
                 <motion.div variants={yearMarkerVariants} className="relative" initial="hidden" animate="visible">
-                  <motion.div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+                  <motion.div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
                     <motion.div
                       className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                       whileHover={{ scale: 1.1 }}
@@ -481,14 +535,25 @@ export default function ExperienceTimeline() {
                     </motion.div>
                   </motion.div>
 
-                  <div className="mt-8 pt-8 ml-4">
+                  {/* Mobile year marker */}
+                  <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+                    <motion.div
+                      className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="text-blue-700 dark:text-blue-300 font-bold text-sm">2020</span>
+                    </motion.div>
+                  </motion.div>
+
+                  <div className="mt-8 pt-[100px] md:ml-4 pl-8">
                     <motion.div
                       initial={{ opacity: 0, x: 100 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                       className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
                     >
-                      <div className="md:col-start-2">
+                      <div className="md:col-start-2 col-start-1">
                         {jobs
                           .filter((job) => job.timeframe === "2017-2020")
                           .map((job) => (
@@ -542,7 +607,7 @@ export default function ExperienceTimeline() {
                 </motion.div>
 
                 <motion.div variants={yearMarkerVariants} className="relative" initial="hidden" animate="visible">
-                  <motion.div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: 0 }}>
+                  <motion.div className="absolute left-0 right-0 md:flex justify-center z-10 hidden" style={{ top: 0 }}>
                     <motion.div
                       className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center border-4 border-white dark:border-cool-950 shadow-lg"
                       whileHover={{ scale: 1.1 }}
@@ -564,14 +629,25 @@ export default function ExperienceTimeline() {
                     </motion.div>
                   </motion.div>
 
-                  <div className="mt-8 pt-8 mr-4">
+                  {/* Mobile year marker */}
+                  <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+                    <motion.div
+                      className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="text-amber-700 dark:text-amber-300 font-bold text-sm">2017</span>
+                    </motion.div>
+                  </motion.div>
+
+                  <div className="mt-8 pt-[100px] md:mr-4 pr-8">
                     <motion.div
                       initial={{ opacity: 0, x: -100 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                       className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
                     >
-                      <div className="md:col-start-1">
+                      <div className="md:col-start-1 col-start-1">
                         {jobs
                           .filter((job) => job.timeframe === "2016-2017")
                           .map((job) => (
