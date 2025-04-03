@@ -60,7 +60,6 @@ export async function getGitHubContributions(availableYears : Array<string>): Pr
     
     // Check for credentials immediately to avoid unnecessary API calls
     if (!username || !token) {
-      console.error("Missing GitHub credentials. Please check environment variables.");
       return {
         pullRequests: availableYears.map(year => ({ 
           year, 
@@ -89,7 +88,6 @@ export async function getGitHubContributions(availableYears : Array<string>): Pr
           contributionCalendar
         };
       } catch (error) {
-        console.error(`Error fetching GitHub commits for ${year}:`, error);
         return {
           year,
           contributionCalendar: {
@@ -109,7 +107,6 @@ export async function getGitHubContributions(availableYears : Array<string>): Pr
       commits
     };
   } catch (error) {
-    console.error("Error in getGitHubContributions:", error);
     return {
       pullRequests: [],
       commits: [],
@@ -166,7 +163,6 @@ async function getGitHubCommits(yearInt : number) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`GitHub API error (${response.status}): ${errorText}`);
       return {
         colors: [],
         totalContributions: 0,
@@ -179,7 +175,6 @@ async function getGitHubCommits(yearInt : number) {
     
     // Check if the response contains the expected data structure
     if (!json.data?.user?.contributionsCollection?.contributionCalendar) {
-      console.error("Unexpected GitHub API response structure:", JSON.stringify(json));
       return {
         colors: [],
         totalContributions: 0,
@@ -190,7 +185,6 @@ async function getGitHubCommits(yearInt : number) {
 
     return json.data.user.contributionsCollection.contributionCalendar;
   } catch (error: any) {
-    console.error(`GitHub API error fetching commits for ${yearInt}:`, error);
     return {
       colors: [],
       totalContributions: 0,
@@ -243,7 +237,6 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`GitHub API error (${response.status}) for PR in ${year}: ${errorText}`);
         return {
           year,
           totalPullRequests: 0,
@@ -255,7 +248,6 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
       
       // Check if the response contains the expected data structure
       if (!json.data?.user?.contributionsCollection?.pullRequestContributions) {
-        console.error("Unexpected GitHub API response structure for PRs:", JSON.stringify(json));
         return {
           year,
           totalPullRequests: 0,
@@ -270,7 +262,6 @@ export async function getGitHubPullRequest(availableYears : Array<string>) {
         totalPullRequests: totalCount
       };
     } catch (error: any) {
-      console.error(`GitHub API error fetching PRs for ${year}:`, error);
       return {
         year,
         totalPullRequests: 0,

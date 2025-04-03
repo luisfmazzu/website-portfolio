@@ -33,7 +33,6 @@ async function fetchGitLabContributions(): Promise<GitLabContributions | string>
     }
     return await response.json();
   } catch (error: any) {
-    console.error('Error fetching GitLab contributions:', error);
     return error.message || 'Unknown error fetching GitLab contributions';
   }
 }
@@ -51,7 +50,6 @@ async function fetchGitHubContributions(availableYears: string[]): Promise<GitHu
     
     return await response.json();
   } catch (error: any) {
-    console.error('Error fetching GitHub contributions:', error);
     throw error;
   }
 }
@@ -80,7 +78,6 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
     try {
       const [gitHubContributions, gitLabContributions] = await Promise.all([
         fetchGitHubContributions(availableYears).catch(error => {
-          console.error("Error fetching GitHub contributions:", error);
           // Return empty data structure on error
           return {
             commits: availableYears.map(year => ({ 
@@ -95,7 +92,6 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
           };
         }),
         fetchGitLabContributions().catch(error => {
-          console.error("Error fetching GitLab contributions:", error);
           return "Error fetching GitLab contributions";
         })
       ]);
@@ -106,7 +102,6 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
         gitHubContributions.commits.forEach(({ year, contributionCalendar }) => {
           // Skip processing if this commit has an error
           if ('error' in contributionCalendar) {
-            console.warn(`Skipping GitHub commits for ${year} due to error: ${contributionCalendar.error}`);
             return;
           }
 
@@ -136,13 +131,12 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
         // Process pull requests - Safely check for errors in each PR object
         gitHubContributions.pullRequests.forEach((prData) => {
           if ('error' in prData) {
-            console.warn(`Skipping GitHub PRs for ${prData.year} due to error: ${prData.error}`);
             return;
           }
           gitStatsData.totalPullRequests += prData.totalPullRequests;
         });
       } else {
-        console.warn("GitHub contributions data is not available or has errors. Using private contributions only.");
+        // GitHub contributions data is not available or has errors. Using private contributions only.
       }
 
       // Process GitLab data
@@ -158,10 +152,9 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
           gitStatsData.totalPullRequests += totalMergeRequests;
         });
       } else {
-        console.warn("GitLab contributions data is not available. Using GitHub and private contributions only.");
+        // GitLab contributions data is not available. Using GitHub and private contributions only.
       }
     } catch (error) {
-      console.error("Error processing GitHub/GitLab data:", error);
       // Continue with private contributions only
     }
 
@@ -196,7 +189,7 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
         gitStatsData.totalPullRequests += totalMergeRequests;
       });
     } catch (error) {
-      console.error("Error processing private contributions:", error);
+      // Continue with private contributions only
     }
 
     // Recalculate totals after merging all data sources
@@ -221,8 +214,6 @@ export async function getGitContributions(availableYears: string[]): Promise<Git
 
     return gitStatsData;
   } catch (error) {
-    console.error("Error in getGitContributions:", error);
-    
     // Return minimal data structure to prevent UI crashes
     const skeleton = createSkeletonData();
     return {

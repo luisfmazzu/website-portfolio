@@ -422,6 +422,13 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "contact.email.value": "luisfmazzu@gmail.com",
           "contact.phone.value": "+55 (41) 99700-3955",
           "contact.copied": "Copied",
+          "contact.form.success.title": "Message sent successfully!",
+          "contact.form.success.description": "Thank you for contacting me. I will respond as soon as possible.",
+          "contact.form.success.newMessage": "Send another message",
+          "contact.toast.success.title": "Message sent successfully!",
+          "contact.toast.success.description": "Thank you for your message. I will respond as soon as possible.",
+          "contact.toast.error.title": "Error sending message",
+          "contact.toast.error.description": "Please try again or contact me directly.",
           
           // Footer
           "footer.tagline": "Building digital experiences that make a difference.",

@@ -10,7 +10,6 @@ export async function GET() {
         const data: GitLabContributions = JSON.parse(jsonData);
         return NextResponse.json(data);
     } catch (error) {
-        console.warn('Could not load private contributions data:', error);
         return NextResponse.json({ commits: [], mergeRequests: [] });
     }
 } 

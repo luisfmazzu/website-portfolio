@@ -86,11 +86,9 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
               soundRef.current.currentTime = 0;
               soundRef.current.volume = 0.5;
             }
-            console.log("Audio successfully initialized");
           })
           .catch(e => {
             // Still not allowed, we'll try again later
-            console.log("Audio not yet allowed:", e);
           });
       }
     };
@@ -129,9 +127,8 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
                 soundRef.current.currentTime = 0;
                 soundRef.current.volume = 0.5;
               }
-              console.log("Audio reinitialized on enable");
             })
-            .catch(e => console.log("Audio reinit failed:", e));
+            .catch(e => {});
         }
       }
     }
@@ -152,7 +149,6 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
     }
     
     if (!audioInitializedRef.current && !audioAllowed) {
-      console.log("Can't play sound - audio not initialized");
       return;
     }
     
@@ -168,8 +164,6 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
       const playPromise = sound.play();
       if (playPromise !== undefined) {
         playPromise.catch(e => {
-          console.log("Sound play error (handled):", e);
-          
           // Try to re-enable audio on this attempt
           if (!audioInitializedRef.current && soundRef.current) {
             soundRef.current.play()
@@ -182,7 +176,6 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
         });
       }
     } catch (e) {
-      console.log("Sound error:", e);
     }
   }, [audioAllowed]);
   

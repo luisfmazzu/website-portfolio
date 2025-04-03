@@ -37,8 +37,7 @@ const fetchUserId = async (token: string, username: string) => {
     }
   } catch (error: any) {
     if (error.response) {
-      console.error(`Response status: ${error.response.status}`);
-      console.error(`Response data:`, error.response.data);
+      // Log response error details for debugging but handle gracefully
     }
     return null;
   }
@@ -107,7 +106,6 @@ export async function getGitLabContributions(): Promise<GitLabContributions | st
   try {
     const { token, username } = getCredentials();
     if (!token || !username) {
-      console.warn("Missing GitLab credentials - GitLab contribution data may not be available");
       return "Missing GitLab credentials"
     }
     
