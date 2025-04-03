@@ -112,7 +112,7 @@ export default function ExperienceTimeline() {
         {t("experience.title")}
       </motion.h3>
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className="relative max-w-8xl mx-auto">
         {/* Timeline line with glow effect */}
         <motion.div
           className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full md:block hidden"
@@ -381,7 +381,7 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-8 ml-12">
+            <div className="mt-8 pt-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

@@ -53,7 +53,7 @@ export function getJobs() {
         t("experience.job6.responsibility6"),
       ],
       website: "https://elixir.xyz",
-      color: "purple",
+      color: "red",
       timeframe: "2023-2024",
     },
     {
