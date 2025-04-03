@@ -91,7 +91,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "experience.job7.title": "Software Engineering Manager",
           "experience.job7.company": "Ocarina Studios",
           "experience.job7.period": "2024 - 2025",
-          "experience.job7.description": "Managing software developers to develop applications ranging from gaming, blockchain and AI.",
+          "experience.job7.description": "Managing software developers to develop applications ranging from gaming, blockchain and AI. Directly managed 15+ engineers and restructured most processes of the company.",
           "experience.job7.responsibility1": "Collaborated with executive leadership to define and implement technology strategies that supported business growth, optimized resources, and maximized ROI.",
           "experience.job7.responsibility2": "Created comprehensive roadmaps, backlogs, and risk assessments for major products, maintaining stakeholder alignment and delivering high-quality releases on schedule.",
           "experience.job7.responsibility3": "Initiated technical training sessions and professional development plans, boosting team retention rates and improving skill diversity within the engineering team.",
