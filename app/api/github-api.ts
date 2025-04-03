@@ -6,9 +6,6 @@ function getCredentials() {
   const token = process.env.GITHUB_TOKEN;
   const username = process.env.GITHUB_USERNAME;
   
-  // Log status of credentials for debugging (not exposing actual values)
-  console.log(`GitHub credentials check: Token ${token ? 'present' : 'missing'}, Username ${username ? 'present' : 'missing'}`);
-  
   return { token, username };
 }
 

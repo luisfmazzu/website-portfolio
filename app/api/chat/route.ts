@@ -6,12 +6,6 @@ function getCredentials() {
   // Access environment variables inside a function to ensure they are retrieved at runtime
   const apiKey = process.env.OPENAI_API_KEY;
   
-  // Log for debugging (will only show in server logs)
-  console.log("OpenAI API credentials check:", {
-    apiKeyExists: !!apiKey,
-    nodeEnv: process.env.NODE_ENV,
-  });
-  
   return { apiKey };
 }
 

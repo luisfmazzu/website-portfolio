@@ -12,8 +12,6 @@ export async function GET(request: Request) {
       ? yearsParam.split(',') 
       : [new Date().getFullYear().toString()];
     
-    console.log('GitHub contributions API route called with years:', availableYears);
-    
     try {
       const contributions = await getGitHubContributions(availableYears)
       
