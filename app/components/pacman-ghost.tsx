@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
+import GhostIcon from './pacman-ghost-icon'
 
 interface Position {
   x: number;
@@ -179,130 +180,9 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
     }
   }, [audioAllowed]);
   
-  // Setup window size and ghost spawning
-  useEffect(() => {
-    if (!isEnabled) return;
-    
-    // Get actual window dimensions
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight
-    });
-    
-    // Handle window resize
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-    
-    window.addEventListener('resize', handleResize);
-    setIsMounted(true);
-    
-    // Clear any existing ghosts when toggling
-    setGhosts([]);
-    
-    // Add initial ghost
-    addGhost();
-    
-    // Setup ghost spawning interval
-    const spawnInterval = setInterval(() => {
-      if (ghosts.length < MAX_GHOSTS) {
-        addGhost();
-      }
-    }, 3000);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearInterval(spawnInterval);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      if (spawnTimeoutRef.current) {
-        clearTimeout(spawnTimeoutRef.current);
-      }
-      // Clear ghosts when disabling
-      setGhosts([]);
-    };
-  }, [isEnabled]);
-  
-  // Track ghost positions
-  useEffect(() => {
-    if (!isMounted || !isEnabled) return;
-    
-    const updateGhostPositions = () => {
-      // Update current positions from DOM
-      const updatedGhosts = [...ghosts];
-      let hasChanges = false;
-      
-      // Update ghost positions based on their DOM elements
-      for (let i = 0; i < updatedGhosts.length; i++) {
-        const ghost = updatedGhosts[i];
-        const element = ghostElements.current[ghost.id];
-        
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          ghost.currentPosition = {
-            x: rect.left + GHOST_SIZE / 2,
-            y: rect.top + GHOST_SIZE / 2
-          };
-          
-          // Check for collision with Pacman
-          if (pacmanPosition && !ghost.isEaten) {
-            const dx = ghost.currentPosition.x - pacmanPosition.x;
-            const dy = ghost.currentPosition.y - pacmanPosition.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < COLLISION_THRESHOLD) {
-              ghost.isEaten = true;
-              playEatSound();
-              
-              // Remove ghost after a short delay to allow animation
-              setTimeout(() => {
-                setGhosts(prev => prev.filter(g => g.id !== ghost.id));
-                
-                // Add a new ghost after a delay
-                if (spawnTimeoutRef.current) {
-                  clearTimeout(spawnTimeoutRef.current);
-                }
-                spawnTimeoutRef.current = setTimeout(() => {
-                  // Check ghost count again before adding
-                  setGhosts(current => {
-                    if (current.length < MAX_GHOSTS) {
-                      const newGhost = createGhost();
-                      return [...current, newGhost];
-                    }
-                    return current;
-                  });
-                }, 1000);
-              }, 300);
-              
-              hasChanges = true;
-            }
-          }
-        }
-      }
-      
-      if (hasChanges) {
-        setGhosts(updatedGhosts);
-      }
-      
-      animationRef.current = requestAnimationFrame(updateGhostPositions);
-    };
-    
-    animationRef.current = requestAnimationFrame(updateGhostPositions);
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isMounted, isEnabled, pacmanPosition, ghosts, playEatSound]);
-  
   // Create a new ghost (separated from addGhost for reuse)
-  const createGhost = useCallback(() => {
-    const usedColors = ghosts.map(g => g.color);
+  const createGhost = useCallback((currentGhosts: GhostData[] = []) => {
+    const usedColors = currentGhosts.map(g => g.color);
     
     // Get random color not already in use
     const availableColors = GHOST_COLORS.filter(c => !usedColors.includes(c.color));
@@ -355,7 +235,7 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
       currentPosition: position, // Initialize current position
       isEaten: false
     };
-  }, [ghosts, windowSize.height, windowSize.width]);
+  }, [windowSize.height, windowSize.width]);
   
   // Add a new ghost
   const addGhost = useCallback(() => {
@@ -364,9 +244,170 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
       if (currentGhosts.length >= MAX_GHOSTS) {
         return currentGhosts;
       }
-      return [...currentGhosts, createGhost()];
+      return [...currentGhosts, createGhost(currentGhosts)];
     });
   }, [createGhost]);
+  
+  // Helper to ensure we always have MAX_GHOSTS ghosts
+  const ensureMaxGhosts = useCallback(() => {
+    setGhosts(currentGhosts => {
+      // If we have enough ghosts, do nothing
+      if (currentGhosts.length >= MAX_GHOSTS) {
+        return currentGhosts;
+      }
+      
+      // Add missing ghosts
+      const missingCount = MAX_GHOSTS - currentGhosts.length;
+      const newGhosts: GhostData[] = [];
+      
+      for (let i = 0; i < missingCount; i++) {
+        newGhosts.push(createGhost([...currentGhosts, ...newGhosts]));
+      }
+      
+      return [...currentGhosts, ...newGhosts];
+    });
+  }, [createGhost]);
+  
+  // Setup window size and ghost spawning
+  useEffect(() => {
+    if (!isEnabled) return;
+    
+    // Get actual window dimensions
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+    
+    // Handle window resize
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    window.addEventListener('resize', handleResize);
+    setIsMounted(true);
+    
+    // Clear any existing ghosts when toggling
+    setGhosts([]);
+    
+    // Add initial ghosts - ensure we start with MAX_GHOSTS
+    ensureMaxGhosts();
+    
+    // Setup ghost spawning interval - check regularly if we need more ghosts
+    const spawnInterval = setInterval(() => {
+      ensureMaxGhosts();
+    }, 3000);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(spawnInterval);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      if (spawnTimeoutRef.current) {
+        clearTimeout(spawnTimeoutRef.current);
+      }
+      // Clear ghosts when disabling
+      setGhosts([]);
+    };
+  }, [isEnabled, ensureMaxGhosts]);
+  
+  // Track ghost positions
+  useEffect(() => {
+    if (!isMounted || !isEnabled) return;
+    
+    // Separate interval for checking if we need more ghosts
+    const checkGhostCountInterval = setInterval(() => {
+      // Always ensure we have MAX_GHOSTS ghosts
+      ensureMaxGhosts();
+    }, 1000);
+
+    const updateGhostPositions = () => {
+      // Update current positions from DOM
+      const updatedGhosts = [...ghosts];
+      let hasChanges = false;
+      
+      // Update ghost positions based on their DOM elements
+      for (let i = 0; i < updatedGhosts.length; i++) {
+        const ghost = updatedGhosts[i];
+        const element = ghostElements.current[ghost.id];
+        
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          ghost.currentPosition = {
+            x: rect.left + GHOST_SIZE / 2,
+            y: rect.top + GHOST_SIZE / 2
+          };
+          
+          // Check if ghost is off screen and should be replaced
+          const isOffScreen = 
+            rect.right < -100 || 
+            rect.bottom < -100 || 
+            rect.left > windowSize.width + 100 || 
+            rect.top > windowSize.height + 100;
+          
+          if (isOffScreen && !ghost.isEaten) {
+            // Mark ghost for removal and replacement
+            ghost.isEaten = true; // Mark as removed
+            
+            // Remove ghost and add a new one
+            setTimeout(() => {
+              setGhosts(prev => {
+                // Remove the off-screen ghost
+                const newGhosts = prev.filter(g => g.id !== ghost.id);
+                
+                // Add a new ghost to replace it
+                const newGhost = createGhost(newGhosts);
+                return [...newGhosts, newGhost];
+              });
+            }, 100);
+            
+            hasChanges = true;
+            continue; // Skip collision check for this ghost
+          }
+          
+          // Check for collision with Pacman
+          if (pacmanPosition && !ghost.isEaten) {
+            const dx = ghost.currentPosition.x - pacmanPosition.x;
+            const dy = ghost.currentPosition.y - pacmanPosition.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < COLLISION_THRESHOLD) {
+              ghost.isEaten = true;
+              playEatSound();
+              
+              // Remove ghost after a short delay to allow animation
+              setTimeout(() => {
+                setGhosts(prev => {
+                  // Just remove the eaten ghost and let the interval handle adding new ones
+                  return prev.filter(g => g.id !== ghost.id);
+                });
+              }, 300);
+              
+              hasChanges = true;
+            }
+          }
+        }
+      }
+      
+      if (hasChanges) {
+        setGhosts(updatedGhosts);
+      }
+      
+      animationRef.current = requestAnimationFrame(updateGhostPositions);
+    };
+    
+    animationRef.current = requestAnimationFrame(updateGhostPositions);
+    
+    return () => {
+      clearInterval(checkGhostCountInterval);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isMounted, isEnabled, pacmanPosition, ghosts, playEatSound, createGhost, windowSize, ensureMaxGhosts]);
   
   if (!isMounted || !isEnabled) return null;
   
@@ -423,22 +464,11 @@ export default function PacmanGhosts({ pacmanPosition, isEnabled }: PacmanGhosts
               ease: "easeInOut"
             }}
           >
-            <svg
-              width={GHOST_SIZE}
-              height={GHOST_SIZE}
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 20C2 9.507 10.507 1 21 1C31.493 1 40 9.507 40 20V34.5C40 36.9853 37.9853 39 35.5 39H35C32.5147 39 30.5 36.9853 30.5 34.5V34.4C30.5 31.9147 28.4853 29.9 26 29.9H26C23.5147 29.9 21.5 31.9147 21.5 34.4V34.5C21.5 36.9853 19.4853 39 17 39H16.5C14.0147 39 12 36.9853 12 34.5V34.4C12 31.9147 9.98528 29.9 7.5 29.9H7C4.51472 29.9 2.5 31.9147 2.5 34.4V34.5C2.5 36.9853 0.485281 39 -2 39H-2.5C-4.98528 39 -7 36.9853 -7 34.5V20H2Z"
-                fill={ghost.color}
-              />
-              <circle cx="13" cy="15" r="4" fill="white" />
-              <circle cx="13" cy="15" r="2" fill="black" />
-              <circle cx="29" cy="15" r="4" fill="white" />
-              <circle cx="29" cy="15" r="2" fill="black" />
-            </svg>
+            <GhostIcon 
+              color={ghost.color}
+              size={GHOST_SIZE}
+              isEaten={ghost.isEaten}
+            />
           </motion.div>
         </motion.div>
       ))}

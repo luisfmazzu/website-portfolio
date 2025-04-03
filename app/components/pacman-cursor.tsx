@@ -30,13 +30,12 @@ export default function PacmanCursor({ isEnabled, onPositionChange }: PacmanCurs
   const lastTimeRef = useRef<number>(0);
   
   // Pacman settings
-  const MAX_SPEED = 3; // Reduced speed for smoother movement
-  const MIN_SPEED = 0.5; // Minimum speed when moving
-  const ACCELERATION = 0.1; // Reduced acceleration for smoother movement
-  const DECELERATION = 0.2; // Reduced deceleration for smoother transitions
-  const STOP_THRESHOLD = 0.2; // Velocity below this is considered stopped
-  const STOP_DISTANCE = 30; // Increased to slow down earlier
-  const ARRIVAL_THRESHOLD = 20; // Increased to stop further from target
+  const MAX_SPEED = 3.3;
+  const ACCELERATION = 0.1;
+  const DECELERATION = 0.2;
+  const STOP_THRESHOLD = 0.2;
+  const STOP_DISTANCE = 30;
+  const ARRIVAL_THRESHOLD = 20;
   
   // Mouth animation effect - separate from movement
   useEffect(() => {
