@@ -146,7 +146,7 @@ export default function ExperienceTimeline() {
 
         {/* Mobile timeline line - simplified version */}
         <motion.div
-          className="absolute left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full md:hidden block"
+          className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-teal-500 rounded-full md:hidden block"
           style={{
             height: "100%",
           }}
@@ -186,9 +186,9 @@ export default function ExperienceTimeline() {
             </motion.div>
 
             {/* Mobile year marker */}
-            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -196,12 +196,12 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-[100px] md:ml-4 pl-8">
+            <div className="mt-8 pt-[100px] md:ml-4 md:pl-8">
               <motion.div
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
+                className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16"
               >
                 <div className="md:col-start-2 col-start-1">
                   {jobs
@@ -279,9 +279,9 @@ export default function ExperienceTimeline() {
             </motion.div>
 
             {/* Mobile year marker */}
-            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -289,14 +289,14 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-[100px] md:mr-4 pr-8">
+            <div className="mt-8 pt-[100px] md:mr-4 sm:pr-8">
               <motion.div
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16"
+                className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16"
               >
-                <div className="md:col-start-1 col-start-1">
+                <div className="md:col-start-1 col-start-2">
                   {jobs
                     .filter((job) => job.timeframe === "2023-2024")
                     .map((job) => (
@@ -371,9 +371,9 @@ export default function ExperienceTimeline() {
             </motion.div>
 
             {/* Mobile year marker */}
-            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -468,9 +468,9 @@ export default function ExperienceTimeline() {
             </div>
 
             {/* Mobile year marker */}
-            <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+            <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-cool-100 dark:bg-cool-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -536,17 +536,17 @@ export default function ExperienceTimeline() {
                   </motion.div>
 
                   {/* Mobile year marker */}
-                  <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
-                    <motion.div
-                      className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
+                  <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
+              <motion.div
+                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
                       <span className="text-blue-700 dark:text-blue-300 font-bold text-sm">2020</span>
                     </motion.div>
                   </motion.div>
 
-                  <div className="mt-8 pt-[100px] md:ml-4 pl-8">
+                  <div className="mt-8 pt-[100px] md:ml-4 sm:pl-8">
                     <motion.div
                       initial={{ opacity: 0, x: 100 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -630,9 +630,9 @@ export default function ExperienceTimeline() {
                   </motion.div>
 
                   {/* Mobile year marker */}
-                  <motion.div className="absolute left-0 md:hidden block z-10" style={{ top: 0 }}>
+                  <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
                     <motion.div
-                      className="ml-4 -translate-x-1/2 w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                      className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -640,7 +640,7 @@ export default function ExperienceTimeline() {
                     </motion.div>
                   </motion.div>
 
-                  <div className="mt-8 pt-[100px] md:mr-4 pr-8">
+                  <div className="mt-8 pt-[100px] md:mr-4 sm:pr-8">
                     <motion.div
                       initial={{ opacity: 0, x: -100 }}
                       animate={{ opacity: 1, x: 0 }}

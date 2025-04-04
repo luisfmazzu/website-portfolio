@@ -35,6 +35,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         en: {
           "previous": "previous",
           "next": "next",
+          "keySkills": "Key Skills",
           // Common terms
           "common.retry": "Retry",
           
@@ -179,7 +180,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
 
           // Git Stats
           "gitStats.title": "Git Stats",
-          "gitStats.description": "My open-source contributions and Git activity.",
+          "gitStats.description": "My open-source contributions, GitHub and GitLab activities.",
           "gitStats.totalCommits": "Total Commits",
           "gitStats.pullRequests": "Pull Requests",
           "gitStats.contributionGraph": "Contribution Graph",
@@ -460,6 +461,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
         pt: {
           "previous": "anterior",
           "next": "próximo",
+          "keySkills": "Habilidades",
           // Common terms
           "common.retry": "Tentar Novamente",
           
@@ -597,14 +599,14 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           // Skills
           "skills.title": "Minhas Habilidades",
           "skills.description": "Estas são as tecnologias e ferramentas com as quais trabalho para dar vida às ideias.",
-          "skills.categories.all": "Todas as Habilidades",
+          "skills.categories.all": "Todas",
           "skills.categories.frontend": "Frontend",
           "skills.categories.backend": "Backend",
           "skills.categories.other": "Outras",
 
           // Git Stats
           "gitStats.title": "Estatísticas do Git",
-          "gitStats.description": "Minhas contribuições de código aberto e atividade no GitHub.",
+          "gitStats.description": "Minhas contribuições de código aberto e atividade no GitHub e GitLab.",
           "gitStats.totalCommits": "Total de Commits",
           "gitStats.pullRequests": "Pull Requests",
           "gitStats.contributionGraph": "Gráfico de Contribuições",

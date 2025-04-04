@@ -52,7 +52,7 @@ export default function WhyHireMe() {
       title: t("whyHireMe.fastLearner.title"),
       description: t("whyHireMe.fastLearner.description"),
       icon: <Zap className="h-8 w-8" />,
-      color: "teal",
+      color: "purple",
       skills: ["Fast learner", "Adaptable", "Discipline", "Innovation", "Prototyping"],
     },
     {
@@ -97,7 +97,7 @@ export default function WhyHireMe() {
       title: t("whyHireMe.efficiency.title"),
       description: t("whyHireMe.efficiency.description"),
       icon: <Clock className="h-8 w-8" />,
-      color: "teal",
+      color: "indigo",
       skills: ["Agile Methodologies", "CI/CD", "Test-Driven Development", "Project Management", "Automation"],
     },
     
