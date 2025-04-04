@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Mail, MapPin, Phone, Send, Copy, Check, AlertCircle } from "lucide-react"
+import { Mail, MapPin, Phone, Send, Copy, Check, AlertCircle, ExternalLink } from "lucide-react"
 import { Button } from "@/app/components/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/components/form"
@@ -17,6 +17,7 @@ import { motion, useInView } from "framer-motion"
 import { Alert, AlertDescription } from "@/app/components/alert"
 import dynamic from "next/dynamic"
 import { useTranslation } from "@/hooks/use-translation"
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/modal"
 
 // Dynamically import ReCAPTCHA with no SSR to avoid hydration issues
 const ReCAPTCHA : any = dynamic(() => import("react-google-recaptcha"), { ssr: false })
@@ -46,6 +47,7 @@ export default function Contact() {
   const [recaptchaVerified, setRecaptchaVerified] = useState(false)
   const [recaptchaError, setRecaptchaError] = useState(false)
   const recaptchaRef = useRef<any>(null)
+  const [mapDialogOpen, setMapDialogOpen] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -195,6 +197,12 @@ export default function Contact() {
     },
   }
 
+  // Standard Google Maps embed URL for Vista Alegre, Curitiba, Paraná, Brazil
+  const mapSrc = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14414.214096384106!2d-49.31244135!3d-25.434093149999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94dce4fd4821215b%3A0xaf784bac0faf9ede!2sVista%20Alegre%2C%20Curitiba%20-%20PR%2C%20Brazil!5e0!3m2!1sen!2sus!4v1714521762848!5m2!1sen!2sus";
+  
+  // Direct Google Maps link for opening in a new tab
+  const googleMapsDirectLink = "https://www.google.com/maps/place/Vista+Alegre,+Curitiba+-+PR,+Brazil/";
+
   return (
     <section
       id="contact"
@@ -335,8 +343,69 @@ export default function Contact() {
                   <CardDescription>{t("contact.location.description")}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-lg text-cool-700 dark:text-cool-300">Curitiba, BR</p>
+              <CardContent className="flex flex-col items-center">
+                <div className="flex items-center justify-between w-full mb-3">
+                  <p className="text-lg text-cool-700 dark:text-cool-300">Curitiba, BR</p>
+                </div>
+                
+                <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
+                  <DialogTrigger asChild>
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }} 
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full"
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full bg-gradient-to-r from-cool-500/10 to-indigo-500/10 hover:from-cool-500/20 hover:to-indigo-500/20 border-cool-200 dark:border-cool-800"
+                      >
+                        <MapPin className="h-4 w-4 mr-2" /> View Map
+                      </Button>
+                    </motion.div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[60vw] xl:max-w-[50vw] p-0">
+                    <div className="p-6">
+                      <DialogHeader>
+                        <DialogTitle>Location</DialogTitle>
+                        <DialogDescription>
+                          Vista Alegre, Curitiba, Paraná, Brazil
+                        </DialogDescription>
+                      </DialogHeader>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="mt-4"
+                      >
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => window.open(googleMapsDirectLink, '_blank')}
+                          className="text-xs"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" /> Open in Google Maps
+                        </Button>
+                      </motion.div>
+                    </div>
+                    <motion.div 
+                      className="aspect-video w-full"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <iframe
+                        src={mapSrc}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Google Map of Vista Alegre, Curitiba, Paraná, Brazil"
+                      ></iframe>
+                    </motion.div>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
           </motion.div>
