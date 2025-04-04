@@ -231,13 +231,13 @@ export default function WhyHireMe() {
             >
               {/* Left side - Reason card */}
               <Card
-                className={`border-${currentReason.color}-200 dark:border-${currentReason.color}-800 hover:border-${currentReason.color}-400 dark:hover:border-${currentReason.color}-600 transition-all duration-300 hover:shadow-lg hover:shadow-${currentReason.color}-100/20 dark:hover:shadow-${currentReason.color}-900/10 p-6 h-full`}
+                className={`border-${currentReason.color}-200 dark:border-${currentReason.color}-800 hover:border-${currentReason.color}-400 dark:hover:border-${currentReason.color}-600 transition-all duration-300 hover:shadow-lg hover:shadow-${currentReason.color}-100/20 dark:hover:shadow-${currentReason.color}-900/10 p-6 h-full flex flex-col`}
               >
                 <motion.div
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="h-full flex flex-col"
+                  className="h-full flex flex-col flex-1"
                 >
                   <motion.div
                     variants={itemVariants}
@@ -271,11 +271,38 @@ export default function WhyHireMe() {
                       ))}
                     </div>
                   </motion.div>
+                  
+                  {/* Mobile-only navigation buttons */}
+                  <motion.div
+                    className="flex justify-between mt-6 md:hidden"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <Button
+                      variant="outline"
+                      onClick={handlePrev}
+                      disabled={currentStep === 0 || isAnimating}
+                      className={`${currentStep === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      <ChevronLeft className="mr-2 h-4 w-4" />
+                      {t("previous")}
+                    </Button>
+
+                    <Button
+                      onClick={handleNext}
+                      disabled={currentStep === reasons.length - 1 || isAnimating}
+                      className={`bg-gradient-to-r from-${currentReason.color}-500 to-${currentReason.color}-600 hover:from-${currentReason.color}-600 hover:to-${currentReason.color}-700 text-white ${currentStep === reasons.length - 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {t("next")}
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </motion.div>
                 </motion.div>
               </Card>
 
-              {/* Right side - Visual representation */}
-              <div className="bg-gradient-to-br from-cool-50 to-indigo-50 dark:from-cool-900/50 dark:to-indigo-900/30 rounded-lg p-6 flex flex-col">
+              {/* Right side - Visual representation - hidden on mobile */}
+              <div className="bg-gradient-to-br from-cool-50 to-indigo-50 dark:from-cool-900/50 dark:to-indigo-900/30 rounded-lg p-6 flex flex-col hidden md:flex">
                 <motion.div
                   className="flex-1 flex items-center justify-center"
                   initial={{ opacity: 0 }}
@@ -290,8 +317,9 @@ export default function WhyHireMe() {
                   {currentStep === 5 && <EfficiencyAnimation />}
                 </motion.div>
 
+                {/* Desktop-only navigation buttons */}
                 <motion.div
-                  className="flex justify-between mt-6"
+                  className="flex justify-between mt-6 hidden md:flex"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}

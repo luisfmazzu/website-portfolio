@@ -188,7 +188,7 @@ export default function ExperienceTimeline() {
             {/* Mobile year marker */}
             <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -281,7 +281,7 @@ export default function ExperienceTimeline() {
             {/* Mobile year marker */}
             <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -373,7 +373,7 @@ export default function ExperienceTimeline() {
             {/* Mobile year marker */}
             <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -470,7 +470,7 @@ export default function ExperienceTimeline() {
             {/* Mobile year marker */}
             <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -535,10 +535,10 @@ export default function ExperienceTimeline() {
                     </motion.div>
                   </motion.div>
 
-                  {/* Mobile year marker */}
-                  <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
+            {/* Mobile year marker */}
+            <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
               <motion.div
-                className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -632,7 +632,7 @@ export default function ExperienceTimeline() {
                   {/* Mobile year marker */}
                   <motion.div className="absolute left-0 right-0 flex justify-center md:hidden z-10" style={{ top: 0 }}>
                     <motion.div
-                      className="ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
+                      className="sm:ml-8 w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border-2 border-white dark:border-cool-950 shadow-lg"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
