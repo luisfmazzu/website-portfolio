@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Luis Ortiz | Senior Full Stack Engineer",
     description: "Welcome to my portfolio. I'm a senior full stack engineer that values writing clean, efficient, and maintainable code.",
-    url: "https://luismatosgarcia.me/",
+    url: "https://luisfmazzu.com/",
     siteName: "Luis Ortiz Portfolio",
     locale: "en_US",
     type: "website",
