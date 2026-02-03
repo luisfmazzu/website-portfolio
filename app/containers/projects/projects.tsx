@@ -90,7 +90,7 @@ export default function Projects() {
             <motion.h2
               className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl gradient-text"
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               {t("projects.title")}
@@ -98,7 +98,7 @@ export default function Projects() {
             <motion.p
               className="mt-4 text-muted-foreground"
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               {t("projects.description")}
