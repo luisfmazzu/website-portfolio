@@ -11,7 +11,7 @@ export interface TimelineJob {
   website?: string
   color: string
   concurrent?: boolean
-  timeframe?: "2021-2023" | "2023-2024" | "2024-2025" | "2025-present" | "2017-2020" | "2016-2017"
+  timeframe?: "2021-2023" | "2023-2024" | "2024-2025" | "2025-present" | "2017-2020" | "2016-2017" | "aug2025-present"
 }
 
 // Create a function to generate jobs with translations
@@ -19,6 +19,22 @@ export function getJobs() {
   const { t } = useTranslation()
 
   const jobs: TimelineJob[] = [
+    {
+      id: 8,
+      year: 2025,
+      title: t("experience.job8.title"),
+      company: t("experience.job8.company"),
+      period: t("experience.job8.period"),
+      description: t("experience.job8.description"),
+      responsibilities: [
+        t("experience.job8.responsibility1"),
+        t("experience.job8.responsibility2"),
+        t("experience.job8.responsibility3"),
+      ],
+      website: "https://luisfmazzu.com",
+      color: "emerald",
+      timeframe: "aug2025-present",
+    },
     {
       id: 7,
       year: 2025,
@@ -35,7 +51,7 @@ export function getJobs() {
       ],
       website: "https://www.ocarinastudios.com",
       color: "indigo",
-      timeframe: "2025-present",
+      timeframe: "2024-2025",
     },
     {
       id: 6,
