@@ -198,14 +198,68 @@ export default function ExperienceTimeline() {
 
             <div className="mt-8 pt-[100px] md:ml-4 md:pl-8">
               <motion.div
-                initial={{ opacity: 0, x: 100 }}
+                initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16"
               >
+                <div className="md:col-start-1 col-start-1">
+                  {jobs
+                    .filter((job) => job.timeframe === "aug2025-present")
+                    .map((job) => (
+                      <Card
+                        key={job.id}
+                        className={`border-${job.color}-200 dark:border-${job.color}-800 hover:border-${job.color}-400 dark:hover:border-${job.color}-600 hover:shadow-lg hover:shadow-${job.color}-100/20 dark:hover:shadow-${job.color}-900/10 hover:-translate-y-1 cursor-pointer transition-all duration-300 bg-white/80 dark:bg-cool-950/30 backdrop-blur-sm`}
+                        onClick={() => handleJobClick(job)}
+                      >
+                        <CardHeader className="pb-2">
+                          <div className="flex items-start gap-2">
+                            <div className={`p-2 rounded-full bg-${job.color}-100 dark:bg-${job.color}-900/30 mt-1`}>
+                              <Briefcase className={`h-5 w-5 text-${job.color}-500 dark:text-${job.color}-400`} />
+                            </div>
+                            <div className="flex-1">
+                              <CardTitle className="text-cool-700 dark:text-cool-300">{job.title}</CardTitle>
+                              <CardDescription className={`text-${job.color}-600 dark:text-${job.color}-400`}>
+                                {job.company} • {job.period}
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-muted-foreground">{job.description}</p>
+                          <div className="flex items-center justify-between mt-4">
+                            <Badge
+                              variant="outline"
+                              className={`bg-${job.color}-50 text-${job.color}-700 border-${job.color}-200 dark:bg-${job.color}-900/20 dark:text-${job.color}-300 dark:border-${job.color}-800`}
+                            >
+                              {t("viewDetails")}
+                            </Badge>
+                            {job.website && (
+                              <Link
+                                href={job.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`text-${job.color}-500 hover:text-${job.color}-600 dark:text-${job.color}-400 dark:hover:text-${job.color}-300`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16 mt-6"
+              >
                 <div className="md:col-start-2 col-start-1">
                   {jobs
-                    .filter((job) => job.timeframe === "2025-present" || job.timeframe === "aug2025-present" || job.timeframe === "2024-2025")
+                    .filter((job) => job.timeframe === "2024-2025")
                     .map((job) => (
                       <Card
                         key={job.id}
