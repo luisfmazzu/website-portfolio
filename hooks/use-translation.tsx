@@ -88,6 +88,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "experience.timeline": "My Experience Timeline",
           
           // Experience Jobs
+          // Job 8
+          "experience.job8.title": "Founding Full Stack Software Engineer",
+          "experience.job8.company": "Stealth Startup",
+          "experience.job8.period": "Aug 2025 - Present",
+          "experience.job8.description": "Designing and developing Web3 DApps and AI-powered SaaS applications as a freelancer, working remotely with clients worldwide.",
+          "experience.job8.responsibility1": "Designed and developed a Web3 DApp to enable stablecoin transfers between different chains (bridge). Responsible for the entire frontend and partially for the backend. The initial blockchain networks used were Ethereum, Arbitrum, Tron, Celo and Solana. The project has been developed as a full product using TypeScript, NextJS, Golang, Gin, Kafka, Datadog, Sentry, Vercel and GCP.",
+          "experience.job8.responsibility2": "Architected modern frontend stack using Next.js App Router, TypeScript, TailwindCSS + shadcn/ui, delivering responsive, accessible and highly interactive cross-chain bridge interface.",
+          "experience.job8.responsibility3": "Implemented advanced multi-chain wallet integration & connection management using wagmi + viem ecosystem, supporting automatic chain detection/switching and multiple wallet providers. Managed complex cross-chain transfer flows with Zustand for lightweight & performant state management, TanStack Query for data fetching/caching, real-time price/quote updates, slippage controls, approval management and transaction progress tracking.",
+
           // Job 7
           "experience.job7.title": "Software Engineering Manager",
           "experience.job7.company": "Ocarina Studios",
@@ -392,7 +401,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
           "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
           "projects.project16.role": "Software Engineer",
-          
+
+          // Project 17
+          "projects.project17.title": "NR01 Platform",
+          "projects.project17.description": "An AI-powered HR management system designed for seamless compliance with Brazilian labor regulations.",
+          "projects.project17.detail1": "Developed a comprehensive AI-powered SaaS platform from the ground up, leveraging TypeScript, React, Next.js, Docker, Node.js, NestJS, AWS SQS, AWS Lambda, AWS S3, and OpenAI to deliver a robust HR compliance solution.",
+          "projects.project17.detail2": "Engineered automated report generation and intelligent action plan systems using Large Language Models (LLMs), streamlining regulatory compliance workflows and reducing manual oversight.",
+          "projects.project17.detail3": "Architected a scalable and maintainable system infrastructure capable of supporting hundreds of thousands of companies and employees, ensuring high availability and performance at enterprise scale.",
+          "projects.project17.role": "Founding Full Stack Software Engineer",
+
           // Common Project Terms
           "projects.companyLabel": "Project by",
           "projects.roleLabel": "Role:",
@@ -514,6 +531,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "experience.timeline": "Linha do Tempo da Minha Experiência",
           
           // Experience Jobs
+          // Job 8
+          "experience.job8.title": "Engenheiro de Software Full Stack Fundador",
+          "experience.job8.company": "Startup Stealth",
+          "experience.job8.period": "Ago 2025 - Presente",
+          "experience.job8.description": "Projetando e desenvolvendo DApps Web3 e aplicações SaaS com IA como freelancer, trabalhando remotamente com clientes em todo o mundo.",
+          "experience.job8.responsibility1": "Projetei e desenvolvi um DApp Web3 para permitir transferências de stablecoins entre diferentes redes (bridge). Responsável por todo o frontend e parcialmente pelo backend. As redes blockchain iniciais utilizadas foram Ethereum, Arbitrum, Tron, Celo e Solana. O projeto foi desenvolvido como um produto completo usando TypeScript, NextJS, Golang, Gin, Kafka, Datadog, Sentry, Vercel e GCP.",
+          "experience.job8.responsibility2": "Arquitetei stack frontend moderna usando Next.js App Router, TypeScript, TailwindCSS + shadcn/ui, entregando interface de bridge cross-chain responsiva, acessível e altamente interativa.",
+          "experience.job8.responsibility3": "Implementei integração avançada de carteiras multi-chain e gerenciamento de conexão usando o ecossistema wagmi + viem, suportando detecção/troca automática de rede e múltiplos provedores de carteira. Gerenciei fluxos complexos de transferência cross-chain com Zustand para gerenciamento de estado leve e performático, TanStack Query para busca/cache de dados, atualizações de preço/cotação em tempo real, controles de slippage, gerenciamento de aprovações e rastreamento de progresso de transações.",
+
           // Job 7
           "experience.job7.title": "Gerente de Engenharia de Software",
           "experience.job7.company": "Ocarina Studios",
@@ -818,7 +844,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
           "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
           "projects.project16.role": "Software Engineer",
-          
+
+          // Project 17
+          "projects.project17.title": "NR01 Platform",
+          "projects.project17.description": "Um sistema de gestão de RH com IA projetado para conformidade com as regulamentações trabalhistas brasileiras.",
+          "projects.project17.detail1": "Desenvolvi uma plataforma SaaS completa com IA do zero, utilizando TypeScript, React, Next.js, Docker, Node.js, NestJS, AWS SQS, AWS Lambda, AWS S3 e OpenAI para entregar uma solução robusta de conformidade de RH.",
+          "projects.project17.detail2": "Engenhei sistemas automatizados de geração de relatórios e planos de ação inteligentes usando Large Language Models (LLMs), otimizando fluxos de trabalho de conformidade regulatória e reduzindo supervisão manual.",
+          "projects.project17.detail3": "Arquitetei uma infraestrutura de sistema escalável e sustentável capaz de suportar centenas de milhares de empresas e funcionários, garantindo alta disponibilidade e desempenho em escala empresarial.",
+          "projects.project17.role": "Engenheiro de Software Full Stack Fundador",
+
           // Common Project Terms
           "projects.companyLabel": "Projeto por",
           "projects.roleLabel": "Função:",

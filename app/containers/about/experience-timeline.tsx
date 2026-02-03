@@ -205,7 +205,7 @@ export default function ExperienceTimeline() {
               >
                 <div className="md:col-start-2 col-start-1">
                   {jobs
-                    .filter((job) => job.timeframe === "2025-present")
+                    .filter((job) => job.timeframe === "2025-present" || job.timeframe === "aug2025-present" || job.timeframe === "2024-2025")
                     .map((job) => (
                       <Card
                         key={job.id}

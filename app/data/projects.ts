@@ -82,6 +82,23 @@ export function getProjects() {
       contribution: [],
     },
     {
+      id: 17,
+      title: t("projects.project17.title"),
+      description: t("projects.project17.description"),
+      image: "/nr01_platform.png?height=400&width=600",
+      technologies: ["TypeScript", "React", "Next.js", "MongoDB", "AWS", "Node.js", "NestJS", "Docker", "API Integration", "LLM", "OpenAI"],
+      details: [
+        t("projects.project17.detail1"),
+        t("projects.project17.detail2"),
+        t("projects.project17.detail3"),
+      ],
+      githubUrl: "",
+      websiteUrl: "",
+      files: [],
+      role: t("projects.project17.role"),
+      contribution: [],
+    },
+    {
       id: 3,
       title: t("projects.project3.title"),
       description: t("projects.project3.description"),
