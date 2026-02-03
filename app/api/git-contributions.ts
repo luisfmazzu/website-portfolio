@@ -262,7 +262,7 @@ interface YearData {
 
 function createSkeletonData(): Record<string, YearData> {
   const startYear = 2016;
-  const endYear = 2025;
+  const endYear = new Date().getFullYear();
 
   // Helper: format date as "YYYY-MM-DD"
   function fmt(date: Date): string {
