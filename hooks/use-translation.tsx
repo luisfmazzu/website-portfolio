@@ -401,7 +401,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
           "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
           "projects.project16.role": "Software Engineer",
-          
+
+          // Project 17
+          "projects.project17.title": "NR01 Platform",
+          "projects.project17.description": "An AI-powered HR management system designed for seamless compliance with Brazilian labor regulations.",
+          "projects.project17.detail1": "Developed a comprehensive AI-powered SaaS platform from the ground up, leveraging TypeScript, React, Next.js, Docker, Node.js, NestJS, AWS SQS, AWS Lambda, AWS S3, and OpenAI to deliver a robust HR compliance solution.",
+          "projects.project17.detail2": "Engineered automated report generation and intelligent action plan systems using Large Language Models (LLMs), streamlining regulatory compliance workflows and reducing manual oversight.",
+          "projects.project17.detail3": "Architected a scalable and maintainable system infrastructure capable of supporting hundreds of thousands of companies and employees, ensuring high availability and performance at enterprise scale.",
+          "projects.project17.role": "Founding Full Stack Software Engineer",
+
           // Common Project Terms
           "projects.companyLabel": "Project by",
           "projects.roleLabel": "Role:",
@@ -836,7 +844,15 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "projects.project16.detail5": "Added auction mechanics (timed bidding, reserve prices) and royalty splits for secondary sales.",
           "projects.project16.detail6": "Optimized gas costs with batch operations and contract upgrades (e.g., proxy patterns).",
           "projects.project16.role": "Software Engineer",
-          
+
+          // Project 17
+          "projects.project17.title": "NR01 Platform",
+          "projects.project17.description": "Um sistema de gestão de RH com IA projetado para conformidade com as regulamentações trabalhistas brasileiras.",
+          "projects.project17.detail1": "Desenvolvi uma plataforma SaaS completa com IA do zero, utilizando TypeScript, React, Next.js, Docker, Node.js, NestJS, AWS SQS, AWS Lambda, AWS S3 e OpenAI para entregar uma solução robusta de conformidade de RH.",
+          "projects.project17.detail2": "Engenhei sistemas automatizados de geração de relatórios e planos de ação inteligentes usando Large Language Models (LLMs), otimizando fluxos de trabalho de conformidade regulatória e reduzindo supervisão manual.",
+          "projects.project17.detail3": "Arquitetei uma infraestrutura de sistema escalável e sustentável capaz de suportar centenas de milhares de empresas e funcionários, garantindo alta disponibilidade e desempenho em escala empresarial.",
+          "projects.project17.role": "Engenheiro de Software Full Stack Fundador",
+
           // Common Project Terms
           "projects.companyLabel": "Projeto por",
           "projects.roleLabel": "Função:",
