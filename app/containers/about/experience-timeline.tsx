@@ -196,7 +196,7 @@ export default function ExperienceTimeline() {
               </motion.div>
             </motion.div>
 
-            <div className="mt-8 pt-[100px] md:ml-4 md:pl-8">
+            <div className="mt-8 pt-[100px] md:mr-4 sm:pr-8">
               <motion.div
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -251,11 +251,13 @@ export default function ExperienceTimeline() {
                     ))}
                 </div>
               </motion.div>
+            </div>
+            <div className="md:ml-4 sm:pl-8">
               <motion.div
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16 mt-6"
+                className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16"
               >
                 <div className="md:col-start-2 col-start-1">
                   {jobs
