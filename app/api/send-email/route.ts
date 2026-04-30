@@ -1,17 +1,42 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { EmailTemplate } from '@/app/components/email-template';
+import { getClientIp, rateLimit } from '@/lib/rate-limit';
+
+const EMAIL_DAILY_LIMIT = 5;
+const EMAIL_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const EMAIL_MINUTE_LIMIT = 2;
+const EMAIL_MINUTE_WINDOW_MS = 60 * 1000;
 
 // Function to get Resend credentials from environment variables
 function getCredentials() {
   // Access environment variables inside a function to ensure they are retrieved at runtime
   const apiKey = process.env.RESEND_API_KEY;
-  
+
   return { apiKey };
 }
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIp(req);
+
+    const minute = rateLimit(`email:min:${ip}`, EMAIL_MINUTE_LIMIT, EMAIL_MINUTE_WINDOW_MS);
+    if (!minute.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before sending another message.' },
+        { status: 429, headers: { 'Retry-After': String(minute.retryAfterSeconds) } },
+      );
+    }
+
+    const daily = rateLimit(`email:day:${ip}`, EMAIL_DAILY_LIMIT, EMAIL_DAILY_WINDOW_MS);
+    if (!daily.allowed) {
+      const hours = Math.ceil(daily.retryAfterSeconds / 3600);
+      return NextResponse.json(
+        { error: `Daily limit reached. Please try again in about ${hours} hour${hours === 1 ? '' : 's'}.` },
+        { status: 429, headers: { 'Retry-After': String(daily.retryAfterSeconds) } },
+      );
+    }
+
     // Get credentials at runtime
     const { apiKey } = getCredentials();
     
