@@ -78,9 +78,8 @@ export default function Chatbot() {
     setIsTyping(true)
 
     try {
-      // Get OpenAI response
       const botResponse = await getBotResponse(inputValue, messages)
-      
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: botResponse,
@@ -90,11 +89,13 @@ export default function Chatbot() {
       setMessages((prev) => [...prev, botMessage])
     } catch (error) {
       console.error("Error getting bot response:", error)
-      
-      // Fallback message in case of error
+
+      const errorContent =
+        error instanceof Error && error.message ? error.message : t("chatbot.fallback")
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: t("chatbot.fallback"),
+        content: errorContent,
         sender: "bot",
         timestamp: new Date(),
       }
@@ -105,90 +106,30 @@ export default function Chatbot() {
   }
 
   const getBotResponse = async (userInput: string, currentMessages: Message[]): Promise<string> => {
-    // Create the system prompt with experience, skills, and projects
-    const systemPrompt = `You are a helpful virtual assistant for Luis Ortiz's portfolio website. 
-    
-Your role is to help visitors learn about Luis and his work by answering their questions based on the following information:
+    const conversationHistory = currentMessages
+      .filter((msg) => msg.sender === "user" || msg.sender === "bot")
+      .map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.content,
+      }))
 
-EXPERIENCE:
-- Software Engineering Manager at Ocarina Studios (2024-2025): Led multiple engineering teams, increased team retention by 40%, reduced onboarding time by 40%, and accelerated feature development time by 50% through rapid prototyping processes.
-
-- Full-Stack Engineer at Elixir Technologies Ltd. (2022-2024): Built a decentralized market-making platform that reached billions in trading volume and $50M+ TVL. Designed systems supporting over 100,000 validators and implemented high-performance algorithms for SLA compliance.
-
-- Full-Stack Software Engineer, Freelancer (2021-2023): Developed multiple successful projects including an irrigation mobile app, a decentralized storage system that improved file retrieval speeds by multiple times, and an AI-powered web scraping platform.
-
-- Interview Engineer Contractor at Karat (2021-2023): Conducted over 100 technical assessments globally and performed hundreds of interview reviews as part of the quality control team.
-
-- Full-Stack Software Engineer Consultant at Ocarina Studios (2021-2023): Led engineering hiring process, developed apps for audio conversion and trivia creation, and fully managed the lifecycle of multiple projects from requirements gathering to deployment.
-
-- Lead Software Engineer at Agres Electronic Systems (2017-2020): Maintained software for agricultural automation product deployed on over 1,000,000 devices. Developed a Seeding Monitor feature that increased product sales by 100% in one year. Led engineering hiring that expanded the team by 300%.
-
-- Junior Software Engineer at Tales Inc. (2016-2017): Automated machinery using PLCs and computer vision, reducing manual operations by more than 50% and increasing quality assurance by over 50%.
-
-SKILLS:
-- Programming Languages: JavaScript, TypeScript, Python, Golang, C#, C++, C, Solidity (junior)
-- Frontend: React, Next.js, HTML, CSS, Tailwind
-- Backend: Node.js, Express, Nest.js, Django, Flask, FastAPI, Gin
-- Databases: PostgreSQL, MongoDB, Redis
-- Cloud: AWS, Docker, Kafka
-- Other: Git, DevOps, Leadership, Mentoring
-
-PROJECTS:
-- Elixir Protocol: A decentralized market-making platform in the blockchain
-- Vintality: An irrigation mobile app with sensor hardware integration
-- Portfolio Website: Personal responsive portfolio site with dark mode and translations
-- Nebula Storage: A decentralized storage and CDN using Ethereum and IPFS
-- Agronave PRO: Advanced agricultural automation system
-- Scrape Sense AI: AI-powered web scraping platform
-- TriviaGen AI: AI application for generating trivia questions
-- Google Accelerator Program: One of 60 studios selected globally for mentorship
-- Dream Quiz: A game API managing user sessions, analytics, and real-time data processing
-- Save Your Brain: Trivia: A high-performance multiplayer trivia game API with matchmaking and rankings
-- Maver: An iOS app that records voice input, converts to editable MIDI, and transforms into instrument sounds
-- Secure Software Auditing with Intel SGX: A Linux kernel modification leveraging Intel SGX for tamper-proof program auditing
-- In-depth Analysis of Blockchain Networks Using TEEs: Research project analyzing security vs. performance tradeoffs in trusted execution environments
-- 3D Pokémon Fan Game: Unity-based 3D game prototype with turn-based battles and procedural terrain generation
-- Bluetooth MIDI Controller: Custom MIDI controller using Arduino with Bluetooth control via Android app
-- NFT Marketplace: Decentralized NFT marketplace with creation, auctions, and trading built with Solidity and Next.js
-
-Luis resides in Curitiba, Brazil, but he may also be in other places such as Canada. He works remotely only and is his preferred way of working.
-Luis email is luisfmazzu@gmail.com and phone is +55 41 997003955. Any mentioning of contact with him, direct him to the contact form in this website.
-
-Luis availability is usually immediately, always instruct them to contact him directly that Luis will get back to them as soon as possible.
-Luis is responsible, innovative, and a great leader. He considers empathy and collaboration in his work. He is always looking for ways to improve his skills and the way he works.
-Luis is eager to help and always willing to share his knowledge. He is a great mentor and a great person to work with.
-Luis is eager to learn and always looking for new challenges. He is a great problem solver and a great person to work with.
-He is a great freelancer that delivers work quickly, on time, and with great quality.
-
-Keep your responses concise, helpful, and in a friendly tone.
-If you're asked about technical details that aren't provided, you can use your general knowledge but make it clear when you're not speaking specifically about Luis's work.
-If you don't know the answer and also can't use general knowledge, you must politely say that you don't know and that you will improve, which is the same attitude Luis has. Improving is a never ending process.
-You can also ask for more information if needed. You must be extra positive about Luis's work and skills.
-If you are asked about something that you don't know about Luis more than once, you can say that you don't know and that they should contact Luis directly via the contact form in this website.`;
-
-    // Format the conversation history for the API
-    const conversationHistory = currentMessages.map(msg => ({
-      role: msg.sender === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    }));
-
-    // Prepare the request to OpenAI API
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...conversationHistory,
-          { role: 'user', content: userInput }
-        ]
+        messages: [...conversationHistory, { role: 'user', content: userInput }],
       }),
     });
 
+    if (response.status === 429) {
+      const data = await response.json().catch(() => ({}))
+      throw new Error(data?.error || "Too many requests. Please try again later.")
+    }
+
     if (!response.ok) {
-      throw new Error('Failed to get response from AI');
+      throw new Error(t("chatbot.fallback"));
     }
 
     const data = await response.json();
