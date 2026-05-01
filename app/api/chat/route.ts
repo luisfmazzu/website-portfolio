@@ -72,26 +72,47 @@ const MINUTE_LIMIT = 5
 const MINUTE_WINDOW_MS = 60 * 1000
 
 type IncomingMessage = { role: 'user' | 'assistant'; content: string }
+type SanitizeResult =
+  | { ok: true; messages: IncomingMessage[] }
+  | { ok: false; reason: string }
 
-function sanitizeMessages(input: unknown): IncomingMessage[] | null {
-  if (!Array.isArray(input)) return null
+function sanitizeMessages(input: unknown): SanitizeResult {
+  if (!Array.isArray(input)) {
+    return { ok: false, reason: `messages is not an array (got ${typeof input})` }
+  }
   const cleaned: IncomingMessage[] = []
   let totalChars = 0
-  for (const m of input) {
-    if (!m || typeof m !== 'object') return null
+  for (let i = 0; i < input.length; i++) {
+    const m = input[i]
+    if (!m || typeof m !== 'object') {
+      return { ok: false, reason: `messages[${i}] is not an object` }
+    }
     const role = (m as { role?: unknown }).role
     const content = (m as { content?: unknown }).content
     if (role !== 'user' && role !== 'assistant') continue
-    if (typeof content !== 'string') return null
+    if (typeof content !== 'string') {
+      return { ok: false, reason: `messages[${i}].content is not a string (got ${typeof content})` }
+    }
     if (content.length === 0) continue
-    if (content.length > MAX_MESSAGE_CHARS) return null
+    if (content.length > MAX_MESSAGE_CHARS) {
+      return { ok: false, reason: `messages[${i}].content too long (${content.length} > ${MAX_MESSAGE_CHARS})` }
+    }
     totalChars += content.length
-    if (totalChars > MAX_TOTAL_CHARS) return null
+    if (totalChars > MAX_TOTAL_CHARS) {
+      return { ok: false, reason: `total content too long (${totalChars} > ${MAX_TOTAL_CHARS})` }
+    }
     cleaned.push({ role, content })
   }
-  if (cleaned.length === 0 || cleaned.length > MAX_MESSAGES) return null
-  if (cleaned[cleaned.length - 1].role !== 'user') return null
-  return cleaned
+  if (cleaned.length === 0) {
+    return { ok: false, reason: 'no usable messages after filtering' }
+  }
+  if (cleaned.length > MAX_MESSAGES) {
+    return { ok: false, reason: `too many messages (${cleaned.length} > ${MAX_MESSAGES})` }
+  }
+  if (cleaned[cleaned.length - 1].role !== 'user') {
+    return { ok: false, reason: `last message role is "${cleaned[cleaned.length - 1].role}", expected "user"` }
+  }
+  return { ok: true, messages: cleaned }
 }
 
 export async function POST(req: Request) {
@@ -143,13 +164,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
     }
 
-    const messages = sanitizeMessages((body as { messages?: unknown })?.messages)
-    if (!messages) {
+    const rawMessages = (body as { messages?: unknown })?.messages
+    const sanitized = sanitizeMessages(rawMessages)
+    if (!sanitized.ok) {
+      console.warn('Chat payload rejected:', sanitized.reason, {
+        rawType: Array.isArray(rawMessages) ? `array(${rawMessages.length})` : typeof rawMessages,
+      })
       return NextResponse.json(
-        { error: 'Invalid messages payload' },
+        { error: 'Invalid messages payload', reason: sanitized.reason },
         { status: 400 },
       )
     }
+    const messages = sanitized.messages
 
     const openai = new OpenAI({ apiKey })
 

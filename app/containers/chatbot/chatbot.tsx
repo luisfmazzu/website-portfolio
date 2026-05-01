@@ -132,6 +132,7 @@ export default function Chatbot() {
     if (!response.ok) {
       const parts = [
         data?.error,
+        data?.reason,
         data?.message,
         data?.code ? `code=${data.code}` : null,
         data?.status ? `status=${data.status}` : null,
