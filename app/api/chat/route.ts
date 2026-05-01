@@ -63,8 +63,8 @@ You can also ask for more information if needed. You must be extra positive abou
 If you are asked about something that you don't know about Luis more than once, you can say that you don't know and that they should contact Luis directly via the contact form in this website.`
 
 const MAX_MESSAGES = 10
-const MAX_MESSAGE_CHARS = 1000
-const MAX_TOTAL_CHARS = 6000
+const MAX_USER_MESSAGE_CHARS = 1000
+const MAX_USER_TOTAL_CHARS = 6000
 
 const DAILY_LIMIT = 15
 const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000
@@ -81,7 +81,7 @@ function sanitizeMessages(input: unknown): SanitizeResult {
     return { ok: false, reason: `messages is not an array (got ${typeof input})` }
   }
   const cleaned: IncomingMessage[] = []
-  let totalChars = 0
+  let userChars = 0
   for (let i = 0; i < input.length; i++) {
     const m = input[i]
     if (!m || typeof m !== 'object') {
@@ -94,12 +94,14 @@ function sanitizeMessages(input: unknown): SanitizeResult {
       return { ok: false, reason: `messages[${i}].content is not a string (got ${typeof content})` }
     }
     if (content.length === 0) continue
-    if (content.length > MAX_MESSAGE_CHARS) {
-      return { ok: false, reason: `messages[${i}].content too long (${content.length} > ${MAX_MESSAGE_CHARS})` }
-    }
-    totalChars += content.length
-    if (totalChars > MAX_TOTAL_CHARS) {
-      return { ok: false, reason: `total content too long (${totalChars} > ${MAX_TOTAL_CHARS})` }
+    if (role === 'user') {
+      if (content.length > MAX_USER_MESSAGE_CHARS) {
+        return { ok: false, reason: `messages[${i}].content too long (${content.length} > ${MAX_USER_MESSAGE_CHARS})` }
+      }
+      userChars += content.length
+      if (userChars > MAX_USER_TOTAL_CHARS) {
+        return { ok: false, reason: `total user content too long (${userChars} > ${MAX_USER_TOTAL_CHARS})` }
+      }
     }
     cleaned.push({ role, content })
   }
