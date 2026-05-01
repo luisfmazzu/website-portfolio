@@ -156,7 +156,7 @@ export async function POST(req: Request) {
     let response
     try {
       response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
         temperature: 0.7,
         max_tokens: 500,
