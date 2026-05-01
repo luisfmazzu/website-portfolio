@@ -62,9 +62,9 @@ If you don't know the answer and also can't use general knowledge, you must poli
 You can also ask for more information if needed. You must be extra positive about Luis's work and skills.
 If you are asked about something that you don't know about Luis more than once, you can say that you don't know and that they should contact Luis directly via the contact form in this website.`
 
-const MAX_MESSAGES = 30
-const MAX_MESSAGE_CHARS = 2000
-const MAX_TOTAL_CHARS = 20000
+const MAX_MESSAGES = 10
+const MAX_MESSAGE_CHARS = 1000
+const MAX_TOTAL_CHARS = 6000
 
 const DAILY_LIMIT = 15
 const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000
