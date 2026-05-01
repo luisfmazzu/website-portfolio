@@ -153,19 +153,55 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey })
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
-      temperature: 0.7,
-      max_tokens: 500,
-    })
+    let response
+    try {
+      response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
+        temperature: 0.7,
+        max_tokens: 500,
+      })
+    } catch (openaiError: any) {
+      console.error('OpenAI API error:', {
+        status: openaiError?.status,
+        code: openaiError?.code,
+        type: openaiError?.type,
+        message: openaiError?.message,
+        body: openaiError?.error,
+      })
+      return NextResponse.json(
+        {
+          error: 'OpenAI request failed',
+          status: openaiError?.status ?? null,
+          code: openaiError?.code ?? null,
+          type: openaiError?.type ?? null,
+          message: openaiError?.message ?? String(openaiError),
+        },
+        { status: 502 },
+      )
+    }
 
-    const content = response.choices[0]?.message?.content || ''
+    const choice = response.choices[0]
+    const content = choice?.message?.content ?? ''
+    if (!content) {
+      console.warn('OpenAI returned empty content:', {
+        finishReason: choice?.finish_reason,
+        choiceCount: response.choices?.length,
+      })
+      return NextResponse.json(
+        {
+          error: 'OpenAI returned an empty response',
+          finishReason: choice?.finish_reason ?? null,
+        },
+        { status: 502 },
+      )
+    }
+
     return NextResponse.json({ content })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in chat API:', error)
     return NextResponse.json(
-      { error: 'Failed to generate a response' },
+      { error: 'Failed to generate a response', message: error?.message ?? String(error) },
       { status: 500 },
     )
   }
