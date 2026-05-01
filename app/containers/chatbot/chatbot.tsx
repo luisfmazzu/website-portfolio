@@ -123,17 +123,29 @@ export default function Chatbot() {
       }),
     });
 
+    const data = await response.json().catch(() => null)
+
     if (response.status === 429) {
-      const data = await response.json().catch(() => ({}))
       throw new Error(data?.error || "Too many requests. Please try again later.")
     }
 
     if (!response.ok) {
-      throw new Error(t("chatbot.fallback"));
+      const parts = [
+        data?.error,
+        data?.message,
+        data?.code ? `code=${data.code}` : null,
+        data?.status ? `status=${data.status}` : null,
+        data?.finishReason ? `finish=${data.finishReason}` : null,
+      ].filter(Boolean)
+      const detail = parts.length > 0 ? parts.join(" — ") : `HTTP ${response.status}`
+      throw new Error(`Chat error: ${detail}`)
     }
 
-    const data = await response.json();
-    return data.content || t("chatbot.fallback");
+    const content = typeof data?.content === "string" ? data.content : ""
+    if (!content) {
+      throw new Error("Chat error: empty response content")
+    }
+    return content
   }
 
   // Animation variants
