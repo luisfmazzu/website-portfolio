@@ -113,38 +113,60 @@ export default function Chatbot() {
         content: msg.content,
       }))
 
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: [...conversationHistory, { role: 'user', content: userInput }],
-      }),
-    });
+    let response: Response
+    try {
+      response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...conversationHistory, { role: 'user', content: userInput }],
+        }),
+      });
+    } catch (networkError) {
+      console.error("Chat network error:", networkError)
+      throw new Error(t("chatbot.error.unavailable"))
+    }
 
     const data = await response.json().catch(() => null)
 
-    if (response.status === 429) {
-      throw new Error(data?.error || "Too many requests. Please try again later.")
-    }
-
     if (!response.ok) {
-      const parts = [
+      const technicalDetail = [
         data?.error,
         data?.reason,
         data?.message,
         data?.code ? `code=${data.code}` : null,
         data?.status ? `status=${data.status}` : null,
         data?.finishReason ? `finish=${data.finishReason}` : null,
-      ].filter(Boolean)
-      const detail = parts.length > 0 ? parts.join(" — ") : `HTTP ${response.status}`
-      throw new Error(`Chat error: ${detail}`)
+      ]
+        .filter(Boolean)
+        .join(" — ") || `HTTP ${response.status}`
+      console.error("Chat API error:", technicalDetail, data)
+
+      if (response.status === 429) {
+        const retryAfter = Number(data?.retryAfterSeconds) || 0
+        if (retryAfter >= 3600) {
+          const hours = Math.ceil(retryAfter / 3600)
+          const unit = hours === 1
+            ? t("chatbot.error.rateLimitDayHour")
+            : t("chatbot.error.rateLimitDayHours")
+          throw new Error(`${t("chatbot.error.rateLimitDayPrefix")} ${hours} ${unit}.`)
+        }
+        throw new Error(t("chatbot.error.rateLimitMinute"))
+      }
+
+      if (response.status === 400) {
+        throw new Error(t("chatbot.error.invalidInput"))
+      }
+
+      throw new Error(t("chatbot.error.unavailable"))
     }
 
     const content = typeof data?.content === "string" ? data.content : ""
     if (!content) {
-      throw new Error("Chat error: empty response content")
+      console.error("Chat API returned empty content:", data)
+      throw new Error(t("chatbot.error.empty"))
     }
     return content
   }
