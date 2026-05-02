@@ -474,6 +474,17 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
           "chatbot.thanks": "You're welcome! If you have any other questions, feel free to ask. I'm here to help!",
           "chatbot.fallback":
             "I'm not sure I understand that question. Could you try rephrasing it? You can ask about my experience, skills, projects or freelance work.",
+          "chatbot.error.unavailable":
+            "I'm having trouble responding right now. Please try again in a moment!",
+          "chatbot.error.invalidInput":
+            "Hmm, I couldn't process that message. Could you try rephrasing it?",
+          "chatbot.error.empty":
+            "I'm not sure how to answer that one. Could you try asking it differently?",
+          "chatbot.error.rateLimitMinute":
+            "Whoa, that's a lot of questions! Please wait a moment before sending another.",
+          "chatbot.error.rateLimitDayPrefix": "You've reached today's chat limit. Please come back in about",
+          "chatbot.error.rateLimitDayHour": "hour",
+          "chatbot.error.rateLimitDayHours": "hours",
         },
         pt: {
           "previous": "anterior",
@@ -919,6 +930,17 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
             "De nada! Se você tiver outras perguntas, sinta-se à vontade para perguntar. Estou aqui para ajudar!",
           "chatbot.fallback":
             "Não tenho certeza se entendi essa pergunta. Você poderia tentar reformulá-la? Você pode perguntar sobre minha experiência, habilidades ou trabalho freelance.",
+          "chatbot.error.unavailable":
+            "Estou com dificuldade para responder agora. Por favor, tente novamente em instantes!",
+          "chatbot.error.invalidInput":
+            "Hmm, não consegui processar essa mensagem. Você poderia tentar reformulá-la?",
+          "chatbot.error.empty":
+            "Não tenho certeza de como responder a essa. Poderia tentar perguntar de outra forma?",
+          "chatbot.error.rateLimitMinute":
+            "Ufa, quantas perguntas! Aguarde um momento antes de enviar outra.",
+          "chatbot.error.rateLimitDayPrefix": "Você atingiu o limite de mensagens de hoje. Por favor, volte em cerca de",
+          "chatbot.error.rateLimitDayHour": "hora",
+          "chatbot.error.rateLimitDayHours": "horas",
         },
       }
 

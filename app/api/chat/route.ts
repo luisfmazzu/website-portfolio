@@ -111,7 +111,7 @@ export async function POST(req: Request) {
     if (!minute.allowed) {
       return NextResponse.json(
         {
-          error: 'Too many requests. Please slow down and try again in a moment.',
+          error: 'minute_rate_limit',
           retryAfterSeconds: minute.retryAfterSeconds,
         },
         {
@@ -123,10 +123,9 @@ export async function POST(req: Request) {
 
     const daily = rateLimit(`chat:day:${ip}`, DAILY_LIMIT, DAILY_WINDOW_MS)
     if (!daily.allowed) {
-      const hours = Math.ceil(daily.retryAfterSeconds / 3600)
       return NextResponse.json(
         {
-          error: `You have reached the daily limit for the assistant. Please try again later (in about ${hours} hour${hours === 1 ? '' : 's'}).`,
+          error: 'daily_rate_limit',
           retryAfterSeconds: daily.retryAfterSeconds,
         },
         {
